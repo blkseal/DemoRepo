@@ -285,8 +285,9 @@ GameObject:
   - component: {fileID: 184632671}
   - component: {fileID: 184632670}
   - component: {fileID: 184632669}
+  - component: {fileID: 184632675}
   m_Layer: 0
-  m_Name: Tester
+  m_Name: NpcTester
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -304,7 +305,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14b63c6c5372fc94fbfc2b46b98f13d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestNavMesh
-  target: {fileID: 1893929400}
+  target: {fileID: 600562765}
 --- !u!195 &184632670
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -422,6 +423,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &184632675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184632668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29c2988b3fa670140ae98d92f376c2b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NpcInteractable
+  questionText: Can I get my order ?
+  optionOneText: Sure, what's your name ?
+  optionTwoText: Fuck you.
+  bubbleOffset: {x: 0, y: 2.2, z: 0}
+  postAnswerTargetPoint: {fileID: 1064505958}
+  agent: {fileID: 184632670}
 --- !u!1 &291272887 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: b3ea9a2e4226ca643933a40a2b50e239, type: 3}
@@ -751,6 +770,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 600562765}
+  - {fileID: 1064505958}
   - {fileID: 1666786978}
   - {fileID: 879664161}
   - {fileID: 1893929400}
@@ -770,6 +790,7 @@ GameObject:
   - component: {fileID: 1059986891}
   - component: {fileID: 1059986895}
   - component: {fileID: 1059986896}
+  - component: {fileID: 1059986897}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -912,6 +933,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   speed: 5
   gravity: -9.81
+--- !u!114 &1059986897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059986890}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b63745bfd6078764fb78b664850796af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerNpcInteractor
+  playerCamera: {fileID: 118272820}
+  interactDistance: 3
+  interactableMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  disableWhileLocked:
+  - {fileID: 1059986896}
+--- !u!1 &1064505957
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1064505958}
+  m_Layer: 0
+  m_Name: WalkAwayTargetPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1064505958
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1064505957}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 6.043, y: -0.98, z: -20.061}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1006514894}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1666786977
 GameObject:
   m_ObjectHideFlags: 0
