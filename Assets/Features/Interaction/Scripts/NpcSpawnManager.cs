@@ -10,6 +10,7 @@ public class NpcSpawnManager : MonoBehaviour
     [SerializeField] private NpcSpawnPoint[] spawnPoints;
     [SerializeField] private NpcTargetPoint[] targetPoints;
     [SerializeField] private LeaveRestaurantTargetPoint leaveRestaurantTargetPoint;
+    [SerializeField] private string npcTag = "NPC";
     [SerializeField] private int maxNpcCount = 10;
     [SerializeField] private Vector2 spawnIntervalRange = new Vector2(3f, 7f);
     [SerializeField] private bool spawnOnStart = true;
@@ -79,6 +80,18 @@ public class NpcSpawnManager : MonoBehaviour
         }
 
         var npc = Instantiate(npcPrefab, spawnPoint.transform.position, spawnPoint.transform.rotation);
+        npc.tag = npcTag;
+
+        var rigidbody = npc.GetComponent<Rigidbody>();
+        if (rigidbody == null)
+        {
+            rigidbody = npc.gameObject.AddComponent<Rigidbody>();
+        }
+
+        rigidbody.isKinematic = true;
+        rigidbody.useGravity = false;
+        rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+
         var agent = npc.GetComponent<NavMeshAgent>();
         if (agent != null)
         {

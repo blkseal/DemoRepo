@@ -426,7 +426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
   queueDirection: {fileID: 1635911289}
-  queueSpacing: 1.25
+  queueSpacing: 3
   navMeshSampleRadius: 1
 --- !u!1001 &781636569
 PrefabInstance:
@@ -549,7 +549,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
   queueDirection: {fileID: 977040047}
-  queueSpacing: 1.25
+  queueSpacing: 2
   navMeshSampleRadius: 1
 --- !u!1 &896665746
 GameObject:
@@ -721,7 +721,6 @@ Transform:
   m_Children:
   - {fileID: 600562765}
   - {fileID: 1635911289}
-  - {fileID: 1064505958}
   - {fileID: 879664161}
   - {fileID: 977040047}
   - {fileID: 1893929400}
@@ -899,7 +898,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerNpcInteractor
   playerCamera: {fileID: 118272820}
-  interactDistance: 3
+  interactDistance: 5
   interactableMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -915,6 +914,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1064505958}
   - component: {fileID: 1064505959}
+  - component: {fileID: 1064505960}
   m_Layer: 0
   m_Name: LeaveRestaurantTargetPoint
   m_TagString: Untagged
@@ -931,11 +931,11 @@ Transform:
   m_GameObject: {fileID: 1064505957}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.043, y: -0.182, z: -19.411}
+  m_LocalPosition: {x: -7.5569997, y: 1.5550001, z: 22.643002}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1006514894}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1064505959
 MonoBehaviour:
@@ -949,6 +949,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57763c7919900974e800e76d98048687, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LeaveRestaurantTargetPoint
+  npcTag: NPC
+--- !u!65 &1064505960
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1064505957}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.32, y: 0.28, z: 0.42}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1369604603
 GameObject:
   m_ObjectHideFlags: 0
@@ -1076,7 +1098,7 @@ MonoBehaviour:
   - {fileID: 879664162}
   - {fileID: 1893929401}
   leaveRestaurantTargetPoint: {fileID: 1064505959}
-  maxNpcCount: 10
+  maxNpcCount: 6
   spawnIntervalRange: {x: 3, y: 7}
   spawnOnStart: 1
 --- !u!4 &1646923404
@@ -1139,7 +1161,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
   queueDirection: {fileID: 480904931}
-  queueSpacing: 1.25
+  queueSpacing: 2
   navMeshSampleRadius: 1
 --- !u!1 &2010222605
 GameObject:
@@ -1277,3 +1299,4 @@ SceneRoots:
   - {fileID: 1059986894}
   - {fileID: 1369604605}
   - {fileID: 1646923404}
+  - {fileID: 1064505958}

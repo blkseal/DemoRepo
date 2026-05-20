@@ -18,13 +18,13 @@ public class NpcInteractable : MonoBehaviour
     private NpcSpawnManager spawnManager;
     private LeaveRestaurantTargetPoint leaveRestaurantTargetPoint;
     private NpcTargetPoint targetPoint;
-    private int queueIndex = -1;
     private Vector3 queueSlotPosition;
+    private bool hasInteracted;
 
     public CustomerActionType CustomerActionType => customerActionType;
     public NpcType? CustomerNpcType => hasNpcType ? npcType : null;
     public TakeAwayTargetPoint TakeAwayTargetPoint => takeAwayTargetPoint;
-    public bool CanInteract => customerActionType == CustomerActionType.TakeAway && takeAwayTargetPoint != null && Vector3.Distance(transform.position, takeAwayTargetPoint.transform.position) <= interactionDistance;
+    public bool CanInteract => !hasInteracted && customerActionType == CustomerActionType.TakeAway && IsInInteractionRange();
     public string QuestionText => conversationSession?.CurrentStep?.Question ?? string.Empty;
     public string OptionOneText => GetOptionLabel(0);
     public string OptionTwoText => GetOptionLabel(1);
@@ -49,15 +49,6 @@ public class NpcInteractable : MonoBehaviour
 
     private void Update()
     {
-        if (leaveRestaurantTargetPoint != null && agent != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
-        {
-            if (Vector3.Distance(transform.position, leaveRestaurantTargetPoint.transform.position) <= agent.stoppingDistance + 0.1f)
-            {
-                Despawn();
-                return;
-            }
-        }
-
         if (targetPoint == null || agent == null)
         {
             return;
@@ -86,6 +77,19 @@ public class NpcInteractable : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (leaveRestaurantTargetPoint == null || other == null)
+        {
+            return;
+        }
+
+        if (other.GetComponentInParent<LeaveRestaurantTargetPoint>() == leaveRestaurantTargetPoint)
+        {
+            Despawn();
+        }
+    }
+
     public void SetSpawnManager(NpcSpawnManager manager)
     {
         spawnManager = manager;
@@ -109,7 +113,6 @@ public class NpcInteractable : MonoBehaviour
     public void SetQueueContext(NpcTargetPoint newTargetPoint, int index, Vector3 slotPosition)
     {
         targetPoint = newTargetPoint;
-        queueIndex = index;
         queueSlotPosition = slotPosition;
 
         if (!HasActiveConversation && agent != null)
@@ -132,6 +135,8 @@ public class NpcInteractable : MonoBehaviour
         {
             return;
         }
+
+        hasInteracted = true;
 
         var conversation = TakeAwayConversationDatabase.GetRandomTakeAwayConversation(CustomerNpcType);
         if (conversation == null)
@@ -199,7 +204,7 @@ public class NpcInteractable : MonoBehaviour
         };
     }
 
-    private void Despawn()
+    public void Despawn()
     {
         if (spawnManager != null)
         {
@@ -212,6 +217,12 @@ public class NpcInteractable : MonoBehaviour
         }
 
         Destroy(gameObject);
+    }
+
+    private bool IsInInteractionRange()
+    {
+        var referencePoint = takeAwayTargetPoint != null ? takeAwayTargetPoint.transform.position : transform.position;
+        return Vector3.Distance(transform.position, referencePoint) <= interactionDistance;
     }
 
     private string GetOptionLabel(int index)

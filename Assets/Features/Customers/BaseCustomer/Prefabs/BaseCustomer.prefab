@@ -68,6 +68,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BaseCustomer
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9c8743240c5df2845b96ddd9767918cf, type: 3}
+      propertyPath: m_TagString
+      value: NPC
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -87,6 +91,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9c8743240c5df2845b96ddd9767918cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5523113243829430286}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9c8743240c5df2845b96ddd9767918cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5864115396250483653}
   m_SourcePrefab: {fileID: 100100000, guid: 9c8743240c5df2845b96ddd9767918cf, type: 3}
 --- !u!1 &7942778467665607026 stripped
 GameObject:
@@ -102,7 +109,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 7942778467665607026}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.36
+  m_Radius: 0.48
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
@@ -195,3 +202,30 @@ MonoBehaviour:
   player: {fileID: 0}
   rotationSpeed: 720
   stoppedSpeedThreshold: 0.01
+--- !u!54 &5864115396250483653
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7942778467665607026}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
