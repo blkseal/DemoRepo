@@ -43,12 +43,7 @@ public class NPCAnimationController : MonoBehaviour
         float speed = agent.velocity.magnitude;
         animator.SetFloat("Speed", speed);
 
-        if (speed > stoppedSpeedThreshold || player == null)
-        {
-            return;
-        }
-
-        var targetDirection = player.position - transform.position;
+        var targetDirection = speed > stoppedSpeedThreshold ? agent.velocity : player != null ? player.position - transform.position : Vector3.zero;
         targetDirection.y = 0f;
 
         if (targetDirection.sqrMagnitude <= 0.0001f)
