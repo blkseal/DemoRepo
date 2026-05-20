@@ -225,8 +225,7 @@ public class NpcInteractionUI : MonoBehaviour
         }
 
         Canvas.ForceUpdateCanvases();
-        var preferredHeight = Mathf.Max(rect.sizeDelta.y, text.preferredHeight + 10f);
-        rect.sizeDelta = new Vector2(rect.sizeDelta.x, preferredHeight);
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x, Mathf.Max(rect.sizeDelta.y, text.preferredHeight + 10f));
     }
 
     private void FitButtonText(Text label)
@@ -247,6 +246,7 @@ public class NpcInteractionUI : MonoBehaviour
     {
         var questionHeight = questionRect != null ? questionRect.sizeDelta.y : 80f;
         var questionBottom = 95f - questionHeight;
+
         optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 35f);
         optionTwoButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 95f);
     }

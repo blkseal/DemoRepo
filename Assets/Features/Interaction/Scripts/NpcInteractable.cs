@@ -15,6 +15,11 @@ public class NpcInteractable : MonoBehaviour
     [SerializeField] private NavMeshAgent agent;
 
     private ConversationSession conversationSession;
+    private NpcSpawnManager spawnManager;
+    private LeaveRestaurantTargetPoint leaveRestaurantTargetPoint;
+    private NpcTargetPoint targetPoint;
+    private int queueIndex = -1;
+    private Vector3 queueSlotPosition;
 
     public CustomerActionType CustomerActionType => customerActionType;
     public NpcType? CustomerNpcType => hasNpcType ? npcType : null;
@@ -30,6 +35,94 @@ public class NpcInteractable : MonoBehaviour
         if (agent == null)
         {
             agent = GetComponent<NavMeshAgent>();
+        }
+    }
+
+    private void Start()
+    {
+        if (agent != null)
+        {
+            agent.avoidancePriority = Random.Range(30, 70);
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+        }
+    }
+
+    private void Update()
+    {
+        if (leaveRestaurantTargetPoint != null && agent != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+        {
+            if (Vector3.Distance(transform.position, leaveRestaurantTargetPoint.transform.position) <= agent.stoppingDistance + 0.1f)
+            {
+                Despawn();
+                return;
+            }
+        }
+
+        if (targetPoint == null || agent == null)
+        {
+            return;
+        }
+
+        if (!targetPoint.Contains(this))
+        {
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
+            {
+                targetPoint.EnterQueue(this);
+            }
+
+            return;
+        }
+
+        if (targetPoint.IsFront(this))
+        {
+            agent.isStopped = true;
+            return;
+        }
+
+        agent.isStopped = false;
+        if (Vector3.Distance(transform.position, queueSlotPosition) > 0.15f)
+        {
+            agent.SetDestination(queueSlotPosition);
+        }
+    }
+
+    public void SetSpawnManager(NpcSpawnManager manager)
+    {
+        spawnManager = manager;
+    }
+
+    public void SetLeaveTargetPoint(LeaveRestaurantTargetPoint targetPoint)
+    {
+        leaveRestaurantTargetPoint = targetPoint;
+    }
+
+    public void SetTargetPoint(NpcTargetPoint newTargetPoint)
+    {
+        targetPoint = newTargetPoint;
+        if (agent != null && targetPoint != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(targetPoint.FrontPosition);
+        }
+    }
+
+    public void SetQueueContext(NpcTargetPoint newTargetPoint, int index, Vector3 slotPosition)
+    {
+        targetPoint = newTargetPoint;
+        queueIndex = index;
+        queueSlotPosition = slotPosition;
+
+        if (!HasActiveConversation && agent != null)
+        {
+            if (targetPoint != null && targetPoint.IsFront(this))
+            {
+                agent.isStopped = true;
+            }
+            else
+            {
+                agent.isStopped = false;
+                agent.SetDestination(queueSlotPosition);
+            }
         }
     }
 
@@ -77,10 +170,20 @@ public class NpcInteractable : MonoBehaviour
         var result = conversationSession.GetInteractionResult();
         Debug.Log($"{name} interaction result: {result}");
 
+        if (targetPoint != null)
+        {
+            targetPoint.ExitQueue(this);
+        }
+
         if (agent != null && postAnswerTargetPoint != null)
         {
             agent.isStopped = false;
             agent.SetDestination(postAnswerTargetPoint.position);
+        }
+        else if (agent != null && leaveRestaurantTargetPoint != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(leaveRestaurantTargetPoint.transform.position);
         }
         else
         {
@@ -94,6 +197,21 @@ public class NpcInteractable : MonoBehaviour
             ConversationFinished = true,
             InteractionResult = result,
         };
+    }
+
+    private void Despawn()
+    {
+        if (spawnManager != null)
+        {
+            spawnManager.UnregisterNpc(this);
+        }
+
+        if (targetPoint != null)
+        {
+            targetPoint.ExitQueue(this);
+        }
+
+        Destroy(gameObject);
     }
 
     private string GetOptionLabel(int index)
