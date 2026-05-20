@@ -8,7 +8,9 @@ public class NpcInteractionUI : MonoBehaviour
 
     private Canvas canvas;
     private GameObject root;
+    private RectTransform rootRect;
     private Text questionLabel;
+    private RectTransform questionRect;
     private Button optionOneButton;
     private Button optionTwoButton;
     private Text optionOneLabel;
@@ -79,6 +81,12 @@ public class NpcInteractionUI : MonoBehaviour
         questionLabel.text = npc.QuestionText;
         optionOneLabel.text = $"1. {npc.OptionOneText}";
         optionTwoLabel.text = $"2. {npc.OptionTwoText}";
+
+        FitText(questionRect, questionLabel);
+        FitButtonText(optionOneLabel);
+        FitButtonText(optionTwoLabel);
+        LayoutButtons();
+
         root.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -102,9 +110,22 @@ public class NpcInteractionUI : MonoBehaviour
         }
 
         var npc = currentNpc;
-        Hide();
-        npc.ResolveAnswer(index);
-        PlayerInteractionState.SetLocked(false);
+        var outcome = npc.ResolveAnswer(index);
+
+        if (outcome.ConversationFinished)
+        {
+            var statusSystem = GameStatusSystem.Instance;
+            if (statusSystem != null)
+            {
+                statusSystem.ApplyInteractionResult(outcome.InteractionResult, npc.CustomerNpcType);
+            }
+
+            Hide();
+            PlayerInteractionState.SetLocked(false);
+            return;
+        }
+
+        Show(npc);
     }
 
     private void BuildUI()
@@ -130,16 +151,22 @@ public class NpcInteractionUI : MonoBehaviour
         root = new GameObject("Panel", typeof(RectTransform), typeof(Image));
         root.transform.SetParent(transform, false);
 
-        var rootRect = root.GetComponent<RectTransform>();
+        rootRect = root.GetComponent<RectTransform>();
         rootRect.anchorMin = new Vector2(0.5f, 0.5f);
         rootRect.anchorMax = new Vector2(0.5f, 0.5f);
-        rootRect.sizeDelta = new Vector2(520f, 220f);
+        rootRect.sizeDelta = new Vector2(560f, 280f);
         root.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.8f);
 
-        questionLabel = CreateText("Question", root.transform, new Vector2(0f, 60f), new Vector2(480f, 50f), 24);
+        questionLabel = CreateText("Question", root.transform, new Vector2(0f, 95f), new Vector2(520f, 80f), 24);
+        questionRect = questionLabel.GetComponent<RectTransform>();
         questionLabel.alignment = TextAnchor.MiddleCenter;
+        questionLabel.horizontalOverflow = HorizontalWrapMode.Wrap;
+        questionLabel.verticalOverflow = VerticalWrapMode.Overflow;
+        questionLabel.resizeTextForBestFit = true;
+        questionLabel.resizeTextMinSize = 16;
+        questionLabel.resizeTextMaxSize = 24;
 
-        optionOneButton = CreateButton("OptionOne", root.transform, new Vector2(0f, 0f));
+        optionOneButton = CreateButton("OptionOne", root.transform, new Vector2(0f, 5f));
         optionTwoButton = CreateButton("OptionTwo", root.transform, new Vector2(0f, -60f));
 
         optionOneLabel = optionOneButton.GetComponentInChildren<Text>();
@@ -155,7 +182,7 @@ public class NpcInteractionUI : MonoBehaviour
         buttonObject.transform.SetParent(parent, false);
 
         var rect = buttonObject.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(420f, 44f);
+        rect.sizeDelta = new Vector2(460f, 50f);
         rect.anchoredPosition = anchoredPosition;
 
         var image = buttonObject.GetComponent<Image>();
@@ -164,6 +191,11 @@ public class NpcInteractionUI : MonoBehaviour
         var label = CreateText("Label", buttonObject.transform, Vector2.zero, rect.sizeDelta, 20);
         label.alignment = TextAnchor.MiddleCenter;
         label.color = Color.black;
+        label.horizontalOverflow = HorizontalWrapMode.Wrap;
+        label.verticalOverflow = VerticalWrapMode.Overflow;
+        label.resizeTextForBestFit = true;
+        label.resizeTextMinSize = 14;
+        label.resizeTextMaxSize = 20;
 
         return buttonObject.GetComponent<Button>();
     }
@@ -183,6 +215,40 @@ public class NpcInteractionUI : MonoBehaviour
         text.color = Color.white;
         text.text = string.Empty;
         return text;
+    }
+
+    private void FitText(RectTransform rect, Text text)
+    {
+        if (rect == null || text == null)
+        {
+            return;
+        }
+
+        Canvas.ForceUpdateCanvases();
+        var preferredHeight = Mathf.Max(rect.sizeDelta.y, text.preferredHeight + 10f);
+        rect.sizeDelta = new Vector2(rect.sizeDelta.x, preferredHeight);
+    }
+
+    private void FitButtonText(Text label)
+    {
+        if (label == null)
+        {
+            return;
+        }
+
+        label.resizeTextForBestFit = true;
+        label.resizeTextMinSize = 14;
+        label.resizeTextMaxSize = 20;
+        label.horizontalOverflow = HorizontalWrapMode.Wrap;
+        label.verticalOverflow = VerticalWrapMode.Overflow;
+    }
+
+    private void LayoutButtons()
+    {
+        var questionHeight = questionRect != null ? questionRect.sizeDelta.y : 80f;
+        var questionBottom = 95f - questionHeight;
+        optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 35f);
+        optionTwoButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 95f);
     }
 
     private static void EnsureEventSystem()

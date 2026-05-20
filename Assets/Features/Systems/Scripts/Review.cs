@@ -20,6 +20,6 @@ public class Review
 
         var min = Mathf.Min(SuspicionPointsMin, SuspicionPointsMax);
         var max = Mathf.Max(SuspicionPointsMin, SuspicionPointsMax);
-        return Random.Range(min, max + 1);
+        return UnityEngine.Random.Range(min, max + 1);
     }
 }

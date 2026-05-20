@@ -21,7 +21,7 @@ public static class ReviewCatalog
     public static readonly Review Complaint = new Review
     {
         Title = "Complaint",
-        Description = "Nice.",
+        Description = "Good. Very nice.",
         ReviewPoints = 3,
         SuspicionPointsMin = 3,
         SuspicionPointsMax = 5,
@@ -30,7 +30,7 @@ public static class ReviewCatalog
     public static readonly Review ManagerEscalation = new Review
     {
         Title = "I want to speak to your manager",
-        Description = "You lucky bastard!",
+        Description = "Very lucky!",
         ReviewPoints = 10,
         SuspicionPointsMin = 5,
         SuspicionPointsMax = 10,

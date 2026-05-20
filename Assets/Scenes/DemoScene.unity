@@ -411,10 +411,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29c2988b3fa670140ae98d92f376c2b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcInteractable
-  questionText: I want to order spicy chicken
-  optionOneText: Ok! Here you go.
-  optionTwoText: Come cook it yourself then.
-  bubbleOffset: {x: 0, y: 2.2, z: 0}
+  customerActionType: 0
+  hasNpcType: 0
+  npcType: 0
+  takeAwayTargetPoint: {fileID: 600562766}
+  interactionDistance: 2
   postAnswerTargetPoint: {fileID: 1064505958}
   agent: {fileID: 473510392}
 --- !u!114 &473510390
@@ -556,6 +557,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 600562765}
+  - component: {fileID: 600562766}
   m_Layer: 0
   m_Name: TakeAwayTargetPoint
   m_TagString: Untagged
@@ -578,6 +580,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1006514894}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &600562766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600562764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01b9f083cd134ae43a29f101e6402c16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TakeAwayTargetPoint
 --- !u!1001 &781636569
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -992,6 +1006,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1006514894}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1369604603
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1369604605}
+  - component: {fileID: 1369604604}
+  m_Layer: 0
+  m_Name: GameStatusSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1369604604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369604603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a56453fe27c544d4487a56425c0f32c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameStatusSystem
+  suspicionLevel: 0
+  reviewPoints: 0
+--- !u!4 &1369604605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1369604603}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.47905, y: -0, z: 40.88651}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1666786977
 GameObject:
   m_ObjectHideFlags: 0
@@ -1189,3 +1249,4 @@ SceneRoots:
   - {fileID: 530610995}
   - {fileID: 1059986894}
   - {fileID: 473510387}
+  - {fileID: 1369604605}
