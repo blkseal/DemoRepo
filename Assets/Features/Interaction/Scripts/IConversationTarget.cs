@@ -2,6 +2,7 @@ public interface IConversationTarget
 {
     bool CanInteract { get; }
     bool ApplyStatusEffects { get; }
+    bool UseReviewResolver { get; }
     NpcType? CustomerNpcType { get; }
     string QuestionText { get; }
     string OptionOneText { get; }

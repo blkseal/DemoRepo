@@ -32,6 +32,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
     public TakeAwayTargetPoint TakeAwayTargetPoint => takeAwayTargetPoint;
     public bool CanInteract => groupRoot == null && !hasInteracted && customerActionType == CustomerActionType.TakeAway && IsInInteractionRange();
     public bool ApplyStatusEffects => true;
+    public bool UseReviewResolver => true;
     public string QuestionText => conversationSession?.CurrentStep?.Question ?? string.Empty;
     public string OptionOneText => GetOptionLabel(0);
     public string OptionTwoText => GetOptionLabel(1);
@@ -216,6 +217,8 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             {
                 ConversationFinished = true,
                 InteractionResult = InteractionResult.Neutral,
+                SuspicionDelta = 0,
+                ReviewPointsDelta = 0,
             };
         }
 
@@ -226,6 +229,8 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             {
                 ConversationFinished = false,
                 InteractionResult = InteractionResult.Neutral,
+                SuspicionDelta = 0,
+                ReviewPointsDelta = 0,
             };
         }
 
@@ -258,6 +263,8 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         {
             ConversationFinished = true,
             InteractionResult = result,
+            SuspicionDelta = 0,
+            ReviewPointsDelta = 0,
         };
     }
 

@@ -64,7 +64,7 @@ public class NpcInteractionUI : MonoBehaviour
         {
             SelectAnswer(0);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+        else if (optionTwoButton.gameObject.activeSelf && (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)))
         {
             SelectAnswer(1);
         }
@@ -80,7 +80,9 @@ public class NpcInteractionUI : MonoBehaviour
         currentTarget = target;
         questionLabel.text = target.QuestionText;
         optionOneLabel.text = $"1. {target.OptionOneText}";
-        optionTwoLabel.text = $"2. {target.OptionTwoText}";
+        optionTwoLabel.text = string.IsNullOrWhiteSpace(target.OptionTwoText) ? string.Empty : $"2. {target.OptionTwoText}";
+
+        optionTwoButton.gameObject.SetActive(!string.IsNullOrWhiteSpace(target.OptionTwoText));
 
         FitText(questionRect, questionLabel);
         FitButtonText(optionOneLabel);
@@ -114,12 +116,16 @@ public class NpcInteractionUI : MonoBehaviour
 
         if (outcome.ConversationFinished)
         {
-            if (target.ApplyStatusEffects)
+            var statusSystem = GameStatusSystem.Instance;
+            if (statusSystem != null)
             {
-                var statusSystem = GameStatusSystem.Instance;
-                if (statusSystem != null)
+                if (target.UseReviewResolver)
                 {
                     statusSystem.ApplyInteractionResult(outcome.InteractionResult, target.CustomerNpcType);
+                }
+                else
+                {
+                    statusSystem.ApplyInteractionResult(outcome.SuspicionDelta, outcome.ReviewPointsDelta);
                 }
             }
 
@@ -250,8 +256,15 @@ public class NpcInteractionUI : MonoBehaviour
         var questionHeight = questionRect != null ? questionRect.sizeDelta.y : 80f;
         var questionBottom = 95f - questionHeight;
 
-        optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 35f);
-        optionTwoButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 95f);
+        if (optionTwoButton.gameObject.activeSelf)
+        {
+            optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 35f);
+            optionTwoButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 95f);
+        }
+        else
+        {
+            optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 65f);
+        }
     }
 
     private static void EnsureEventSystem()
