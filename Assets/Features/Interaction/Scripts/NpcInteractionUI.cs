@@ -15,7 +15,7 @@ public class NpcInteractionUI : MonoBehaviour
     private Button optionTwoButton;
     private Text optionOneLabel;
     private Text optionTwoLabel;
-    private NpcInteractable currentNpc;
+    private IConversationTarget currentTarget;
 
     public static NpcInteractionUI Instance
     {
@@ -55,7 +55,7 @@ public class NpcInteractionUI : MonoBehaviour
 
     private void Update()
     {
-        if (!IsOpen || currentNpc == null)
+        if (!IsOpen || currentTarget == null)
         {
             return;
         }
@@ -70,17 +70,17 @@ public class NpcInteractionUI : MonoBehaviour
         }
     }
 
-    public void Show(NpcInteractable npc)
+    public void Show(IConversationTarget target)
     {
-        if (npc == null)
+        if (target == null)
         {
             return;
         }
 
-        currentNpc = npc;
-        questionLabel.text = npc.QuestionText;
-        optionOneLabel.text = $"1. {npc.OptionOneText}";
-        optionTwoLabel.text = $"2. {npc.OptionTwoText}";
+        currentTarget = target;
+        questionLabel.text = target.QuestionText;
+        optionOneLabel.text = $"1. {target.OptionOneText}";
+        optionTwoLabel.text = $"2. {target.OptionTwoText}";
 
         FitText(questionRect, questionLabel);
         FitButtonText(optionOneLabel);
@@ -99,25 +99,28 @@ public class NpcInteractionUI : MonoBehaviour
             root.SetActive(false);
         }
 
-        currentNpc = null;
+        currentTarget = null;
     }
 
     public void SelectAnswer(int index)
     {
-        if (currentNpc == null)
+        if (currentTarget == null)
         {
             return;
         }
 
-        var npc = currentNpc;
-        var outcome = npc.ResolveAnswer(index);
+        var target = currentTarget;
+        var outcome = target.ResolveAnswer(index);
 
         if (outcome.ConversationFinished)
         {
-            var statusSystem = GameStatusSystem.Instance;
-            if (statusSystem != null)
+            if (target.ApplyStatusEffects)
             {
-                statusSystem.ApplyInteractionResult(outcome.InteractionResult, npc.CustomerNpcType);
+                var statusSystem = GameStatusSystem.Instance;
+                if (statusSystem != null)
+                {
+                    statusSystem.ApplyInteractionResult(outcome.InteractionResult, target.CustomerNpcType);
+                }
             }
 
             Hide();
@@ -125,7 +128,7 @@ public class NpcInteractionUI : MonoBehaviour
             return;
         }
 
-        Show(npc);
+        Show(target);
     }
 
     private void BuildUI()

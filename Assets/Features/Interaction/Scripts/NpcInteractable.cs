@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class NpcInteractable : MonoBehaviour
+public class NpcInteractable : MonoBehaviour, IConversationTarget
 {
     [Header("Interaction Setup")]
     [SerializeField] private CustomerActionType customerActionType = CustomerActionType.TakeAway;
@@ -13,28 +13,46 @@ public class NpcInteractable : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private Transform postAnswerTargetPoint;
     [SerializeField] private NavMeshAgent agent;
+    [SerializeField] private Animator animator;
 
     private ConversationSession conversationSession;
     private NpcSpawnManager spawnManager;
     private LeaveRestaurantTargetPoint leaveRestaurantTargetPoint;
     private NpcTargetPoint targetPoint;
+    private TableTargetPoint tableTargetPoint;
+    private TableSitPoint occupiedSitPoint;
+    private TableSitPoint reservedSitPoint;
     private Vector3 queueSlotPosition;
     private bool hasInteracted;
+    private bool isSitting;
+    private NpcGroupInteractable groupRoot;
 
     public CustomerActionType CustomerActionType => customerActionType;
     public NpcType? CustomerNpcType => hasNpcType ? npcType : null;
     public TakeAwayTargetPoint TakeAwayTargetPoint => takeAwayTargetPoint;
-    public bool CanInteract => !hasInteracted && customerActionType == CustomerActionType.TakeAway && IsInInteractionRange();
+    public bool CanInteract => groupRoot == null && !hasInteracted && customerActionType == CustomerActionType.TakeAway && IsInInteractionRange();
+    public bool ApplyStatusEffects => true;
     public string QuestionText => conversationSession?.CurrentStep?.Question ?? string.Empty;
     public string OptionOneText => GetOptionLabel(0);
     public string OptionTwoText => GetOptionLabel(1);
     public bool HasActiveConversation => conversationSession != null && !conversationSession.IsFinished;
+    public bool IsSitting => isSitting;
+
+    public void SetGroupRoot(NpcGroupInteractable newGroupRoot)
+    {
+        groupRoot = newGroupRoot;
+    }
 
     private void Awake()
     {
         if (agent == null)
         {
             agent = GetComponent<NavMeshAgent>();
+        }
+
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
         }
     }
 
@@ -49,6 +67,25 @@ public class NpcInteractable : MonoBehaviour
 
     private void Update()
     {
+        if (isSitting)
+        {
+            return;
+        }
+
+        if (tableTargetPoint != null && reservedSitPoint != null && agent != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
+        {
+            SeatAt(reservedSitPoint.transform, Vector3.zero, tableTargetPoint, reservedSitPoint);
+            return;
+        }
+
+        if (tableTargetPoint != null && reservedSitPoint == null && agent != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
+        {
+            if (tableTargetPoint.TrySeatNpc(this))
+            {
+                return;
+            }
+        }
+
         if (targetPoint == null || agent == null)
         {
             return;
@@ -102,6 +139,8 @@ public class NpcInteractable : MonoBehaviour
 
     public void SetTargetPoint(NpcTargetPoint newTargetPoint)
     {
+        tableTargetPoint = null;
+        reservedSitPoint = null;
         targetPoint = newTargetPoint;
         if (agent != null && targetPoint != null)
         {
@@ -110,9 +149,27 @@ public class NpcInteractable : MonoBehaviour
         }
     }
 
+    public void SetTableTargetPoint(TableTargetPoint newTableTargetPoint)
+    {
+        targetPoint = null;
+        tableTargetPoint = newTableTargetPoint;
+        if (agent != null && tableTargetPoint != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(tableTargetPoint.transform.position);
+        }
+    }
+
+    public void SetReservedSeat(TableSitPoint sitPoint)
+    {
+        reservedSitPoint = sitPoint;
+    }
+
     public void SetQueueContext(NpcTargetPoint newTargetPoint, int index, Vector3 slotPosition)
     {
         targetPoint = newTargetPoint;
+        tableTargetPoint = null;
+        reservedSitPoint = null;
         queueSlotPosition = slotPosition;
 
         if (!HasActiveConversation && agent != null)
@@ -204,6 +261,34 @@ public class NpcInteractable : MonoBehaviour
         };
     }
 
+    public void SeatAt(Transform seatTransform, Vector3 offset, TableTargetPoint sourceTableTargetPoint, TableSitPoint sitPoint)
+    {
+        if (seatTransform == null)
+        {
+            return;
+        }
+
+        isSitting = true;
+        tableTargetPoint = sourceTableTargetPoint;
+        occupiedSitPoint = sitPoint;
+
+        if (agent != null)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+            agent.Warp(seatTransform.position + offset);
+            agent.enabled = false;
+        }
+
+        transform.position = seatTransform.position + offset;
+        transform.rotation = seatTransform.rotation;
+
+        if (animator != null)
+        {
+            animator.SetBool("IsSitting", true);
+        }
+    }
+
     public void Despawn()
     {
         if (spawnManager != null)
@@ -214,6 +299,11 @@ public class NpcInteractable : MonoBehaviour
         if (targetPoint != null)
         {
             targetPoint.ExitQueue(this);
+        }
+
+        if (occupiedSitPoint != null && tableTargetPoint != null)
+        {
+            tableTargetPoint.ReleaseSeat(occupiedSitPoint);
         }
 
         Destroy(gameObject);

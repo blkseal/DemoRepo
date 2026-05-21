@@ -8,6 +8,7 @@ public class NPCAnimationController : MonoBehaviour
     [SerializeField] private float rotationSpeed = 720f;
     [SerializeField] private float stoppedSpeedThreshold = 0.01f;
     private Animator animator;
+    private NpcInteractable npcInteractable;
 
     void Start()
     {
@@ -15,6 +16,8 @@ public class NPCAnimationController : MonoBehaviour
         {
             agent = GetComponent<NavMeshAgent>();
         }
+
+        npcInteractable = GetComponent<NpcInteractable>();
 
         if (player == null)
         {
@@ -37,6 +40,12 @@ public class NPCAnimationController : MonoBehaviour
     {
         if (agent == null || animator == null)
         {
+            return;
+        }
+
+        if (npcInteractable != null && npcInteractable.IsSitting)
+        {
+            animator.SetFloat("Speed", 0f);
             return;
         }
 
