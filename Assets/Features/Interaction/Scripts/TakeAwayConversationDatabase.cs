@@ -88,10 +88,6 @@ public static class TakeAwayConversationDatabase
                  },
              },
          },
-
-
-
-
     };
 
     public static readonly ConversationDefinition[] KarenConversations = { };
@@ -101,6 +97,11 @@ public static class TakeAwayConversationDatabase
     public static ConversationDefinition GetRandomTakeAwayConversation(NpcType? npcType)
     {
         var pool = GetPool(npcType);
+        if (pool == null || pool.Length == 0)
+        {
+            pool = GenericConversations;
+        }
+
         if (pool == null || pool.Length == 0)
         {
             return null;

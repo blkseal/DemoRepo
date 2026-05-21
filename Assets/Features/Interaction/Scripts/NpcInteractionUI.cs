@@ -15,7 +15,7 @@ public class NpcInteractionUI : MonoBehaviour
     private Button optionTwoButton;
     private Text optionOneLabel;
     private Text optionTwoLabel;
-    private NpcInteractable currentNpc;
+    private IConversationTarget currentTarget;
 
     public static NpcInteractionUI Instance
     {
@@ -55,7 +55,7 @@ public class NpcInteractionUI : MonoBehaviour
 
     private void Update()
     {
-        if (!IsOpen || currentNpc == null)
+        if (!IsOpen || currentTarget == null)
         {
             return;
         }
@@ -64,23 +64,25 @@ public class NpcInteractionUI : MonoBehaviour
         {
             SelectAnswer(0);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2))
+        else if (optionTwoButton.gameObject.activeSelf && (Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2)))
         {
             SelectAnswer(1);
         }
     }
 
-    public void Show(NpcInteractable npc)
+    public void Show(IConversationTarget target)
     {
-        if (npc == null)
+        if (target == null)
         {
             return;
         }
 
-        currentNpc = npc;
-        questionLabel.text = npc.QuestionText;
-        optionOneLabel.text = $"1. {npc.OptionOneText}";
-        optionTwoLabel.text = $"2. {npc.OptionTwoText}";
+        currentTarget = target;
+        questionLabel.text = target.QuestionText;
+        optionOneLabel.text = $"1. {target.OptionOneText}";
+        optionTwoLabel.text = string.IsNullOrWhiteSpace(target.OptionTwoText) ? string.Empty : $"2. {target.OptionTwoText}";
+
+        optionTwoButton.gameObject.SetActive(!string.IsNullOrWhiteSpace(target.OptionTwoText));
 
         FitText(questionRect, questionLabel);
         FitButtonText(optionOneLabel);
@@ -99,25 +101,32 @@ public class NpcInteractionUI : MonoBehaviour
             root.SetActive(false);
         }
 
-        currentNpc = null;
+        currentTarget = null;
     }
 
     public void SelectAnswer(int index)
     {
-        if (currentNpc == null)
+        if (currentTarget == null)
         {
             return;
         }
 
-        var npc = currentNpc;
-        var outcome = npc.ResolveAnswer(index);
+        var target = currentTarget;
+        var outcome = target.ResolveAnswer(index);
 
         if (outcome.ConversationFinished)
         {
             var statusSystem = GameStatusSystem.Instance;
             if (statusSystem != null)
             {
-                statusSystem.ApplyInteractionResult(outcome.InteractionResult, npc.CustomerNpcType);
+                if (target.UseReviewResolver)
+                {
+                    statusSystem.ApplyInteractionResult(outcome.InteractionResult, target.CustomerNpcType);
+                }
+                else
+                {
+                    statusSystem.ApplyInteractionResult(outcome.SuspicionDelta, outcome.ReviewPointsDelta);
+                }
             }
 
             Hide();
@@ -125,7 +134,7 @@ public class NpcInteractionUI : MonoBehaviour
             return;
         }
 
-        Show(npc);
+        Show(target);
     }
 
     private void BuildUI()
@@ -247,8 +256,15 @@ public class NpcInteractionUI : MonoBehaviour
         var questionHeight = questionRect != null ? questionRect.sizeDelta.y : 80f;
         var questionBottom = 95f - questionHeight;
 
-        optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 35f);
-        optionTwoButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 95f);
+        if (optionTwoButton.gameObject.activeSelf)
+        {
+            optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 35f);
+            optionTwoButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 95f);
+        }
+        else
+        {
+            optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 65f);
+        }
     }
 
     private static void EnsureEventSystem()
