@@ -87,7 +87,7 @@ public class TableTargetPoint : MonoBehaviour
                 continue;
             }
 
-            npc.SeatAt(sitPoint.transform, seatOffset, this, sitPoint);
+            npc.SeatAt(sitPoint.transform, this, sitPoint);
             return true;
         }
 

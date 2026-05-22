@@ -15,6 +15,9 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private Animator animator;
 
+    [Header("Seating")]
+    [SerializeField] private float sittingYOffset = 0f;
+
     private ConversationSession conversationSession;
     private NpcSpawnManager spawnManager;
     private LeaveRestaurantTargetPoint leaveRestaurantTargetPoint;
@@ -75,7 +78,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
 
         if (tableTargetPoint != null && reservedSitPoint != null && agent != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
         {
-            SeatAt(reservedSitPoint.transform, Vector3.zero, tableTargetPoint, reservedSitPoint);
+            SeatAt(reservedSitPoint.transform, tableTargetPoint, reservedSitPoint);
             return;
         }
 
@@ -268,7 +271,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         };
     }
 
-    public void SeatAt(Transform seatTransform, Vector3 offset, TableTargetPoint sourceTableTargetPoint, TableSitPoint sitPoint)
+    public void SeatAt(Transform seatTransform, TableTargetPoint sourceTableTargetPoint, TableSitPoint sitPoint)
     {
         if (seatTransform == null)
         {
@@ -279,15 +282,17 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         tableTargetPoint = sourceTableTargetPoint;
         occupiedSitPoint = sitPoint;
 
+        var seatPosition = seatTransform.position + Vector3.up * sittingYOffset;
+
         if (agent != null)
         {
             agent.isStopped = true;
             agent.ResetPath();
-            agent.Warp(seatTransform.position + offset);
+            agent.Warp(seatPosition);
             agent.enabled = false;
         }
 
-        transform.position = seatTransform.position + offset;
+        transform.position = seatPosition;
         transform.rotation = seatTransform.rotation;
 
         if (animator != null)

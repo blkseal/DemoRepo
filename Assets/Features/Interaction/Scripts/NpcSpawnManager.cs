@@ -5,8 +5,15 @@ using UnityEngine.AI;
 
 public class NpcSpawnManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class NpcPrefabEntry
+    {
+        public NpcInteractable prefab;
+        public float spawnWeight = 1f;
+    }
+
     [Header("Spawn Setup")]
-    [SerializeField] private NpcInteractable npcPrefab;
+    [SerializeField] private NpcPrefabEntry[] npcPrefabs;
     [SerializeField] private NpcSpawnPoint[] spawnPoints;
     [SerializeField] private NpcTargetPoint[] targetPoints;
     [SerializeField] private TableTargetPoint[] tableTargetPoints;
@@ -64,7 +71,7 @@ public class NpcSpawnManager : MonoBehaviour
 
     private void SpawnNpcBatch()
     {
-        if (npcPrefab == null || spawnPoints == null || spawnPoints.Length == 0)
+        if (npcPrefabs == null || npcPrefabs.Length == 0 || spawnPoints == null || spawnPoints.Length == 0)
         {
             return;
         }
@@ -91,7 +98,13 @@ public class NpcSpawnManager : MonoBehaviour
 
     private void SpawnLoneTakeAwayNpc(NpcSpawnPoint spawnPoint)
     {
-        var npc = Instantiate(npcPrefab, spawnPoint.transform.position, spawnPoint.transform.rotation);
+        var prefab = GetRandomNpcPrefab();
+        if (prefab == null)
+        {
+            return;
+        }
+
+        var npc = Instantiate(prefab, spawnPoint.transform.position, spawnPoint.transform.rotation);
         SetupNpcCommon(npc);
 
         npc.SetSpawnManager(this);
@@ -102,6 +115,12 @@ public class NpcSpawnManager : MonoBehaviour
 
     private void SpawnTableGroup(NpcSpawnPoint spawnPoint, int groupSize, TableTargetPoint tableTarget)
     {
+        var prefab = GetRandomNpcPrefab();
+        if (prefab == null)
+        {
+            return;
+        }
+
         var groupRootObject = new GameObject("NpcGroup_Table");
         groupRootObject.transform.position = spawnPoint.transform.position;
         groupRootObject.transform.rotation = spawnPoint.transform.rotation;
@@ -118,7 +137,7 @@ public class NpcSpawnManager : MonoBehaviour
 
         for (var i = 0; i < groupSize; i++)
         {
-            var npc = Instantiate(npcPrefab, spawnPoint.transform.position, spawnPoint.transform.rotation, groupRootObject.transform);
+            var npc = Instantiate(prefab, spawnPoint.transform.position, spawnPoint.transform.rotation, groupRootObject.transform);
             SetupNpcCommon(npc);
             npc.SetGroupRoot(group);
             npc.SetSpawnManager(this);
@@ -157,6 +176,45 @@ public class NpcSpawnManager : MonoBehaviour
             agent.avoidancePriority = Random.Range(30, 70);
             agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
         }
+    }
+
+    private NpcInteractable GetRandomNpcPrefab()
+    {
+        if (npcPrefabs == null || npcPrefabs.Length == 0)
+        {
+            return null;
+        }
+
+        var totalWeight = 0f;
+        foreach (var entry in npcPrefabs)
+        {
+            if (entry != null)
+            {
+                totalWeight += entry.spawnWeight;
+            }
+        }
+
+        if (totalWeight <= 0f)
+        {
+            return null;
+        }
+
+        var randomValue = Random.value * totalWeight;
+        var currentWeight = 0f;
+
+        foreach (var entry in npcPrefabs)
+        {
+            if (entry != null && entry.prefab != null)
+            {
+                currentWeight += entry.spawnWeight;
+                if (randomValue <= currentWeight)
+                {
+                    return entry.prefab;
+                }
+            }
+        }
+
+        return npcPrefabs[npcPrefabs.Length - 1]?.prefab;
     }
 
     private TableTargetPoint GetFreeTableForGroup(int groupSize)
