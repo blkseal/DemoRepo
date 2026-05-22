@@ -38,57 +38,35 @@ public class PlatePlayerSystem : MonoBehaviour
     }
 
     void PlacePlate()
+{
+    if (heldPlate == null) return;
+
+    TableSlot slot = GetFreeSlot();
+    if (slot == null)
     {
-        // 🚰 SE ESTÁ NA ZONA DE LAVAGEM
-        if (nearbySink != null)
-        {
-            Destroy(heldPlate);
-            heldPlate = null;
-            return;
-        }
-
-        // 🪑 SENÃO: MESA
-        if (nearbyTableZone == null)
-            return;
-
-        TableSlot slot = GetFreeSlot();
-
-        if (slot == null)
-        {
-            Debug.Log("Mesa cheia!");
-            return;
-        }
-
-        Transform snap = slot.transform.Find("SnapPoint");
-        if (snap == null) return;
-
-        Plate plate = heldPlate.GetComponent<Plate>();
-        if (plate != null)
-            plate.OnPlacedOnTable();
-
-        heldPlate.transform.SetParent(null);
-
-        heldPlate.transform.position = snap.position;
-        heldPlate.transform.rotation = snap.rotation;
-        heldPlate.transform.localScale = Vector3.one;
-
-        slot.occupied = true;
-
-        heldPlate = null;
+        Debug.Log("Mesa cheia!");
+        return;
     }
 
-    TableSlot GetFreeSlot()
+    Transform snap = slot.transform.Find("SnapPoint");
+    if (snap == null)
     {
-        TableSlot[] slots = Object.FindObjectsByType<TableSlot>(FindObjectsSortMode.None);
-
-        foreach (TableSlot s in slots)
-        {
-            if (!s.occupied)
-                return s;
-        }
-
-        return null;
+        Debug.Log("SnapPoint em falta!");
+        return;
     }
+
+    Plate plate = heldPlate.GetComponent<Plate>();
+    if (plate != null)
+        plate.OnPlacedOnTable();
+
+    heldPlate.transform.SetParent(null);
+    heldPlate.transform.position = snap.position;
+    heldPlate.transform.rotation = snap.rotation;
+    heldPlate.transform.localScale = Vector3.one;
+
+    slot.occupied = true;
+    heldPlate = null;
+}
 
     void OnTriggerEnter(Collider other)
     {
@@ -113,4 +91,17 @@ public class PlatePlayerSystem : MonoBehaviour
         if (other.GetComponent<SinkZone>())
             nearbySink = null;
     }
+    TableSlot GetFreeSlot()
+{
+    TableSlot[] slots =
+        Object.FindObjectsByType<TableSlot>(FindObjectsSortMode.None);
+
+    foreach (TableSlot s in slots)
+    {
+        if (!s.occupied)
+            return s;
+    }
+
+    return null;
+}
 }
