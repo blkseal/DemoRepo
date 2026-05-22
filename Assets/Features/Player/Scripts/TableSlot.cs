@@ -2,5 +2,5 @@ using UnityEngine;
 
 public class TableSlot : MonoBehaviour
 {
-    public bool occupied = false;
+    public bool occupied;
 }

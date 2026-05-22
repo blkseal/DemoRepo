@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Plate : MonoBehaviour
 {
-    public float timeToBecomeDirty = 10f;
+    public float dirtyTime = 10f;
 
     public GameObject foodModel;
     public GameObject emptyModel;
@@ -12,7 +12,7 @@ public class Plate : MonoBehaviour
     public void OnPlacedOnTable()
     {
         isOnTable = true;
-        Invoke(nameof(MakeDirty), timeToBecomeDirty);
+        Invoke(nameof(MakeDirty), dirtyTime);
     }
 
     public void OnPickedUp()
@@ -25,7 +25,7 @@ public class Plate : MonoBehaviour
     {
         if (!isOnTable) return;
 
-        if (foodModel != null) foodModel.SetActive(false);
-        if (emptyModel != null) emptyModel.SetActive(true);
+        if (foodModel) foodModel.SetActive(false);
+        if (emptyModel) emptyModel.SetActive(true);
     }
 }
