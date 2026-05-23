@@ -17,6 +17,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
 
     [Header("Seating")]
     [SerializeField] private float sittingYOffset = 0f;
+    [SerializeField] private float sittingForwardOffset = 0f;
 
     private ConversationSession conversationSession;
     private NpcSpawnManager spawnManager;
@@ -29,6 +30,9 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
     private bool hasInteracted;
     private bool isSitting;
     private NpcGroupInteractable groupRoot;
+    private Collider npcCollider;
+    private float noCollisionTimer = 0f;
+    private const float NO_COLLISION_DURATION = 5f;
 
     public CustomerActionType CustomerActionType => customerActionType;
     public NpcType? CustomerNpcType => hasNpcType ? npcType : null;
@@ -58,6 +62,11 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         {
             animator = GetComponent<Animator>();
         }
+
+        if (npcCollider == null)
+        {
+            npcCollider = GetComponent<Collider>();
+        }
     }
 
     private void Start()
@@ -76,6 +85,25 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             return;
         }
 
+        // Update no-collision timer
+        if (noCollisionTimer > 0f)
+        {
+            noCollisionTimer -= Time.deltaTime;
+            if (noCollisionTimer <= 0f)
+            {
+                // Re-enable collisions
+                if (npcCollider != null)
+                {
+                    npcCollider.enabled = true;
+                }
+                if (agent != null)
+                {
+                    agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+                }
+            }
+        }
+
+        // Handle seating logic - UNCHANGED
         if (tableTargetPoint != null && reservedSitPoint != null && agent != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
         {
             SeatAt(reservedSitPoint.transform, tableTargetPoint, reservedSitPoint);
@@ -95,6 +123,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             return;
         }
 
+        // Queue management - simplified with automatic slot assignment from NpcTargetPoint
         if (!targetPoint.Contains(this))
         {
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
@@ -105,22 +134,27 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             return;
         }
 
-        if (targetPoint.IsFront(this))
-        {
-            agent.isStopped = true;
-            return;
-        }
-
+        // Always move to the assigned queue slot position
         agent.isStopped = false;
         if (Vector3.Distance(transform.position, queueSlotPosition) > 0.15f)
         {
             agent.SetDestination(queueSlotPosition);
+        }
+        else
+        {
+            agent.isStopped = true;
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (leaveRestaurantTargetPoint == null || other == null)
+        {
+            return;
+        }
+
+        // Prevent group NPCs from entering other triggers
+        if (groupRoot != null)
         {
             return;
         }
@@ -169,9 +203,9 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         reservedSitPoint = sitPoint;
     }
 
-    public void SetQueueContext(NpcTargetPoint newTargetPoint, int index, Vector3 slotPosition)
+    public void SetQueueContext(NpcTargetPoint queueTargetPoint, int index, Vector3 slotPosition)
     {
-        targetPoint = newTargetPoint;
+        targetPoint = queueTargetPoint;
         tableTargetPoint = null;
         reservedSitPoint = null;
         queueSlotPosition = slotPosition;
@@ -243,6 +277,21 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         if (targetPoint != null)
         {
             targetPoint.ExitQueue(this);
+            targetPoint = null;
+        }
+
+        // Start no-collision timer
+        noCollisionTimer = NO_COLLISION_DURATION;
+        
+        // Disable collisions immediately
+        if (npcCollider != null)
+        {
+            npcCollider.enabled = false;
+        }
+
+        if (agent != null)
+        {
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
         }
 
         if (agent != null && postAnswerTargetPoint != null)
@@ -271,6 +320,25 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         };
     }
 
+    private void MoveToExit()
+    {
+        if (agent == null)
+        {
+            return;
+        }
+
+        if (postAnswerTargetPoint != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(postAnswerTargetPoint.position);
+        }
+        else if (leaveRestaurantTargetPoint != null)
+        {
+            agent.isStopped = false;
+            agent.SetDestination(leaveRestaurantTargetPoint.transform.position);
+        }
+    }
+
     public void SeatAt(Transform seatTransform, TableTargetPoint sourceTableTargetPoint, TableSitPoint sitPoint)
     {
         if (seatTransform == null)
@@ -282,7 +350,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         tableTargetPoint = sourceTableTargetPoint;
         occupiedSitPoint = sitPoint;
 
-        var seatPosition = seatTransform.position + Vector3.up * sittingYOffset;
+        var seatPosition = seatTransform.position + Vector3.up * sittingYOffset + seatTransform.forward * sittingForwardOffset;
 
         if (agent != null)
         {

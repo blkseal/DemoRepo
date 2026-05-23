@@ -109,7 +109,18 @@ public class NpcSpawnManager : MonoBehaviour
 
         npc.SetSpawnManager(this);
         npc.SetLeaveTargetPoint(leaveRestaurantTargetPoint);
-        npc.SetTargetPoint(GetRandomTakeAwayTargetPoint());
+
+        var targetPoint = GetRandomTakeAwayTargetPoint();
+        if (targetPoint != null)
+        {
+            npc.SetTargetPoint(targetPoint);
+            var agent = npc.GetComponent<NavMeshAgent>();
+            if (agent != null)
+            {
+                agent.SetDestination(targetPoint.FrontPosition);
+            }
+        }
+
         RegisterNpc(npc);
     }
 
@@ -242,6 +253,21 @@ public class NpcSpawnManager : MonoBehaviour
             return null;
         }
 
-        return targetPoints[Random.Range(0, targetPoints.Length)];
+        // Find queues with available slots
+        var availableQueues = new List<NpcTargetPoint>();
+        foreach (var targetPoint in targetPoints)
+        {
+            if (targetPoint != null && targetPoint.GetQueueCount() < targetPoint.GetMaxQueueSize())
+            {
+                availableQueues.Add(targetPoint);
+            }
+        }
+
+        if (availableQueues.Count == 0)
+        {
+            return null; // No queues with available space
+        }
+
+        return availableQueues[Random.Range(0, availableQueues.Count)];
     }
 }

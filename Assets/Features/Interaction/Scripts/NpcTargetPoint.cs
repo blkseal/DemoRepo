@@ -1,16 +1,42 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class NpcTargetPoint : MonoBehaviour
 {
-    [SerializeField] private Transform queueDirection;
-    [SerializeField] private float queueSpacing = 1.25f;
-    [SerializeField] private float navMeshSampleRadius = 1f;
+    [SerializeField] private List<QueueSlot> queueSlots = new List<QueueSlot>();
+    [SerializeField] private Collider triggerCollider;
 
     private readonly List<NpcInteractable> queue = new List<NpcInteractable>();
 
-    public Vector3 FrontPosition => transform.position;
+    public Vector3 FrontPosition => queueSlots.Count > 0 ? queueSlots[0].Position : transform.position;
+
+    private void Awake()
+    {
+        if (triggerCollider == null)
+        {
+            triggerCollider = GetComponent<Collider>();
+        }
+
+        if (triggerCollider != null && !triggerCollider.isTrigger)
+        {
+            triggerCollider.isTrigger = true;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        var npc = other.GetComponent<NpcInteractable>();
+        if (npc != null && !Contains(npc) && !IsPartOfGroup(npc))
+        {
+            EnterQueue(npc);
+        }
+    }
+
+    private bool IsPartOfGroup(NpcInteractable npc)
+    {
+        return npc.GetComponent<NpcGroupInteractable>() != null || 
+               npc.transform.parent?.GetComponent<NpcGroupInteractable>() != null;
+    }
 
     public bool Contains(NpcInteractable npc)
     {
@@ -48,24 +74,54 @@ public class NpcTargetPoint : MonoBehaviour
 
     public Vector3 GetQueueSlotPosition(int index)
     {
-        var direction = queueDirection != null ? queueDirection.forward : transform.forward;
-        var desiredPosition = transform.position - direction.normalized * queueSpacing * index;
-
-        if (NavMesh.SamplePosition(desiredPosition, out var hit, navMeshSampleRadius, NavMesh.AllAreas))
+        if (index >= 0 && index < queueSlots.Count)
         {
-            return hit.position;
+            return queueSlots[index].Position;
         }
 
-        return desiredPosition;
+        return transform.position;
+    }
+
+    public int GetQueueCount()
+    {
+        return queue.Count;
+    }
+
+    public int GetMaxQueueSize()
+    {
+        return queueSlots.Count;
     }
 
     private void RefreshQueue()
     {
         queue.RemoveAll(npc => npc == null);
 
+        // Assign each NPC in queue to their corresponding slot position
         for (var i = 0; i < queue.Count; i++)
         {
-            queue[i].SetQueueContext(this, i, GetQueueSlotPosition(i));
+            var npc = queue[i];
+            var slotPosition = GetQueueSlotPosition(i);
+
+            npc.SetQueueContext(this, i, slotPosition);
         }
     }
+
+    public void OnValidate()
+    {
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
+        RefreshQueue();
+    }
+}
+
+[System.Serializable]
+public class QueueSlot
+{
+    [SerializeField] private Transform slotTransform;
+
+    public Vector3 Position => slotTransform != null ? slotTransform.position : Vector3.zero;
+    public Transform SlotTransform => slotTransform;
 }
