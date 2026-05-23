@@ -45,6 +45,13 @@ public class PlayerNpcInteractor : MonoBehaviour
             return;
         }
 
+        var group = hit.collider.GetComponentInParent<NpcGroupInteractable>();
+        if (group != null)
+        {
+            group.Interact();
+            return;
+        }
+
         var npc = hit.collider.GetComponentInParent<NpcInteractable>();
         if (npc == null)
         {

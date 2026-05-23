@@ -72,6 +72,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: NPC
       objectReference: {fileID: 0}
+    - target: {fileID: 8879528566716807029, guid: 9c8743240c5df2845b96ddd9767918cf, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.58
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -112,7 +116,7 @@ NavMeshAgent:
   m_Radius: 0.48
   m_Speed: 3.5
   m_Acceleration: 8
-  avoidancePriority: 50
+  avoidancePriority: 47
   m_AngularSpeed: 120
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
@@ -164,6 +168,7 @@ MonoBehaviour:
   interactionDistance: 2
   postAnswerTargetPoint: {fileID: 0}
   agent: {fileID: 6001266585873286143}
+  animator: {fileID: 0}
 --- !u!95 &372901745945537214
 Animator:
   serializedVersion: 7
