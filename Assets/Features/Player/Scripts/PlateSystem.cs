@@ -1,80 +1,124 @@
 using UnityEngine;
 
-public class PlatePlayerSystem : MonoBehaviour
+public class PlayerPlateSystem : MonoBehaviour
 {
     public Transform handPoint;
 
-    GameObject nearbyPlate;
-    TableZone nearbyTableZone;
-    SinkZone nearbySink;
-
     GameObject heldPlate;
+
+    PlatePickupSource nearbySource;
+    TableZone nearbyTable;
+    SinkZone nearbySink;
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (heldPlate == null)
-                PickPlate();
-            else
-                PlacePlate();
+            // 🍽️ PEGAR DO BALCÃO (SPAWN)
+            if (heldPlate == null && nearbySource != null)
+            {
+                SpawnPlate();
+                return;
+            }
+
+            // 🚰 LIXO
+            if (heldPlate != null && nearbySink != null)
+            {
+                Destroy(heldPlate);
+                heldPlate = null;
+                return;
+            }
+
+            // 🪑 MESA
+            if (nearbyTable != null)
+            {
+                if (heldPlate == null)
+                    TakeFromTable();
+                else
+                    PlaceOnTable();
+            }
         }
     }
 
-    void PickPlate()
+    void SpawnPlate()
     {
-        if (nearbyPlate == null) return;
-
-        Plate plate = nearbyPlate.GetComponent<Plate>();
-        if (plate != null)
-            plate.OnPickedUp();
-
-        heldPlate = nearbyPlate;
+        heldPlate = Instantiate(
+            nearbySource.platePrefab,
+            handPoint.position,
+            handPoint.rotation
+        );
 
         heldPlate.transform.SetParent(handPoint);
         heldPlate.transform.localPosition = Vector3.zero;
         heldPlate.transform.localRotation = Quaternion.identity;
         heldPlate.transform.localScale = Vector3.one;
+
+        Plate plate = heldPlate.GetComponent<Plate>();
+        if (plate != null)
+            plate.OnPickedUp();
     }
 
-    void PlacePlate()
-{
-    if (heldPlate == null) return;
-
-    TableSlot slot = GetFreeSlot();
-    if (slot == null)
+    void PlaceOnTable()
     {
+        foreach (TableSlot slot in nearbyTable.slots)
+        {
+            if (!slot.occupied)
+            {
+                heldPlate.transform.SetParent(null);
+
+                heldPlate.transform.position = slot.snapPoint.position;
+                heldPlate.transform.rotation = slot.snapPoint.rotation;
+                heldPlate.transform.localScale = Vector3.one;
+
+                slot.occupied = true;
+                slot.currentPlate = heldPlate;
+
+                Plate plate = heldPlate.GetComponent<Plate>();
+                if (plate != null)
+                    plate.OnPlacedOnTable();
+
+                heldPlate = null;
+                return;
+            }
+        }
+
         Debug.Log("Mesa cheia!");
-        return;
     }
 
-    Transform snap = slot.transform.Find("SnapPoint");
-    if (snap == null)
+    void TakeFromTable()
     {
-        Debug.Log("SnapPoint em falta!");
-        return;
+        foreach (TableSlot slot in nearbyTable.slots)
+        {
+            if (slot.occupied && slot.currentPlate != null)
+            {
+                heldPlate = slot.currentPlate;
+
+                heldPlate.transform.SetParent(handPoint);
+                heldPlate.transform.localPosition = Vector3.zero;
+                heldPlate.transform.localRotation = Quaternion.identity;
+                heldPlate.transform.localScale = Vector3.one;
+
+                slot.occupied = false;
+                slot.currentPlate = null;
+
+                Plate plate = heldPlate.GetComponent<Plate>();
+                if (plate != null)
+                    plate.OnPickedUp();
+
+                return;
+            }
+        }
+
+        Debug.Log("Mesa vazia!");
     }
-
-    Plate plate = heldPlate.GetComponent<Plate>();
-    if (plate != null)
-        plate.OnPlacedOnTable();
-
-    heldPlate.transform.SetParent(null);
-    heldPlate.transform.position = snap.position;
-    heldPlate.transform.rotation = snap.rotation;
-    heldPlate.transform.localScale = Vector3.one;
-
-    slot.occupied = true;
-    heldPlate = null;
-}
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Plate>())
-            nearbyPlate = other.gameObject;
+        if (other.GetComponent<PlatePickupSource>())
+            nearbySource = other.GetComponent<PlatePickupSource>();
 
         if (other.GetComponent<TableZone>())
-            nearbyTableZone = other.GetComponent<TableZone>();
+            nearbyTable = other.GetComponent<TableZone>();
 
         if (other.GetComponent<SinkZone>())
             nearbySink = other.GetComponent<SinkZone>();
@@ -82,26 +126,13 @@ public class PlatePlayerSystem : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<Plate>())
-            nearbyPlate = null;
+        if (other.GetComponent<PlatePickupSource>())
+            nearbySource = null;
 
         if (other.GetComponent<TableZone>())
-            nearbyTableZone = null;
+            nearbyTable = null;
 
         if (other.GetComponent<SinkZone>())
             nearbySink = null;
     }
-    TableSlot GetFreeSlot()
-{
-    TableSlot[] slots =
-        Object.FindObjectsByType<TableSlot>(FindObjectsSortMode.None);
-
-    foreach (TableSlot s in slots)
-    {
-        if (!s.occupied)
-            return s;
-    }
-
-    return null;
-}
 }
