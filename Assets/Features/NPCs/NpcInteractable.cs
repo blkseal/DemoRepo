@@ -32,7 +32,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
     private NpcGroupInteractable groupRoot;
     private Collider npcCollider;
     private float noCollisionTimer = 0f;
-    private const float NO_COLLISION_DURATION = 5f;
+    private const float NO_COLLISION_DURATION = 10f;
 
     public CustomerActionType CustomerActionType => customerActionType;
     public NpcType? CustomerNpcType => hasNpcType ? npcType : null;

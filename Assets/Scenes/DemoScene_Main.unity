@@ -858,8 +858,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68a688abcaad0f244be27bc39f87fed2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PhoneCallInteractable
-  minTimeBetweenCalls: 30
-  maxTimeBetweenCalls: 60
+  minTimeBetweenCalls: 20
+  maxTimeBetweenCalls: 45
   typedCallChance: 0.5
   callerTypeChances:
   - NpcType: 0
@@ -867,7 +867,7 @@ MonoBehaviour:
   - NpcType: 1
     Chance: 1
   - NpcType: 2
-    Chance: 1
+    Chance: 0
   ringClip: {fileID: 8300000, guid: 6688d92092a2ede4797a3241a24e31aa, type: 3}
   ringVolume: 1
   promptText: Press E to answer call
@@ -2212,7 +2212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bb698389953e3d459d9397c62b95d20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  speed: 5
+  speed: 7
   gravity: -9.81
 --- !u!114 &1059986897
 MonoBehaviour:
