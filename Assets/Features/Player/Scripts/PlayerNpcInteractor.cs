@@ -29,18 +29,48 @@ public class PlayerNpcInteractor : MonoBehaviour
 
     private void Update()
     {
-        if (PlayerInteractionState.IsLocked || playerCamera == null)
+        if (playerCamera == null)
         {
+            InteractionPromptUI.Instance.Hide();
             return;
         }
 
-        if (!Input.GetKeyDown(KeyCode.E))
+        if (PlayerInteractionState.IsLocked)
         {
+            InteractionPromptUI.Instance.Hide();
             return;
         }
 
         var ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         if (!Physics.Raycast(ray, out var hit, interactDistance, interactableMask, QueryTriggerInteraction.Ignore))
+        {
+            InteractionPromptUI.Instance.Hide();
+            return;
+        }
+
+        var phoneCall = hit.collider.GetComponentInParent<PhoneCallInteractable>();
+        if (phoneCall != null)
+        {
+            if (phoneCall.CanInteract)
+            {
+                InteractionPromptUI.Instance.Show(phoneCall.PromptText);
+            }
+            else
+            {
+                InteractionPromptUI.Instance.Hide();
+            }
+
+            if (Input.GetKeyDown(KeyCode.E) && phoneCall.CanInteract)
+            {
+                phoneCall.Interact();
+            }
+
+            return;
+        }
+
+        InteractionPromptUI.Instance.Hide();
+
+        if (!Input.GetKeyDown(KeyCode.E))
         {
             return;
         }

@@ -18,6 +18,7 @@ public class NpcGroupInteractable : MonoBehaviour, IConversationTarget
     public bool ApplyStatusEffects => true;
     public bool UseReviewResolver => false;
     public NpcType? CustomerNpcType => hasNpcType ? npcType : null;
+    public string ConversationTitleText => string.Empty;
     public string QuestionText => questionText;
     public string OptionOneText => optionOneText;
     public string OptionTwoText => optionTwoText;

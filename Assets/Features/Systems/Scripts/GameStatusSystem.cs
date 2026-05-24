@@ -57,7 +57,12 @@ public class GameStatusSystem : MonoBehaviour
 
     public Review ApplyInteractionResult(InteractionResult interactionResult, NpcType? npcType = null)
     {
-        var review = ReviewResolver.ResolveReview(interactionResult, npcType);
+        return ApplyInteractionResult(interactionResult, 0, npcType);
+    }
+
+    public Review ApplyInteractionResult(InteractionResult interactionResult, int interactionStrength, NpcType? npcType = null)
+    {
+        var review = ReviewResolver.ResolveReview(interactionResult, interactionStrength, npcType);
         if (review == null)
         {
             NotifyStatusChanged(null);

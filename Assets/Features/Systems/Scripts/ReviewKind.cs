@@ -6,4 +6,5 @@ public enum ReviewKind
     ManagerEscalation = 3,
     PositiveReview = 4,
     PraiseBook = 5,
+    Recommendation = 6,
 }

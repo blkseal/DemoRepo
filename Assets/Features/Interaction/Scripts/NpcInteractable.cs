@@ -40,6 +40,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
     public bool CanInteract => groupRoot == null && !hasInteracted && customerActionType == CustomerActionType.TakeAway && IsInInteractionRange();
     public bool ApplyStatusEffects => true;
     public bool UseReviewResolver => true;
+    public string ConversationTitleText => string.Empty;
     public string QuestionText => conversationSession?.CurrentStep?.Question ?? string.Empty;
     public string OptionOneText => GetOptionLabel(0);
     public string OptionTwoText => GetOptionLabel(1);
@@ -272,6 +273,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         }
 
         var result = conversationSession.GetInteractionResult();
+        var interactionStrength = conversationSession.AccumulatedAnswerValue;
         Debug.Log($"{name} interaction result: {result}");
 
         if (targetPoint != null)
@@ -282,7 +284,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
 
         // Start no-collision timer
         noCollisionTimer = NO_COLLISION_DURATION;
-        
+
         // Disable collisions immediately
         if (npcCollider != null)
         {
@@ -315,7 +317,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         {
             ConversationFinished = true,
             InteractionResult = result,
-            SuspicionDelta = 0,
+            SuspicionDelta = interactionStrength,
             ReviewPointsDelta = 0,
         };
     }

@@ -4,6 +4,7 @@ public interface IConversationTarget
     bool ApplyStatusEffects { get; }
     bool UseReviewResolver { get; }
     NpcType? CustomerNpcType { get; }
+    string ConversationTitleText { get; }
     string QuestionText { get; }
     string OptionOneText { get; }
     string OptionTwoText { get; }

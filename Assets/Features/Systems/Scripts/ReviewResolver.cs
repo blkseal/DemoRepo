@@ -20,7 +20,12 @@ public static class ReviewResolver
 
     public static Review ResolveReview(InteractionResult interactionResult, NpcType? npcType = null)
     {
-        var options = GetOptions(interactionResult);
+        return ResolveReview(interactionResult, 0, npcType);
+    }
+
+    public static Review ResolveReview(InteractionResult interactionResult, int interactionStrength, NpcType? npcType = null)
+    {
+        var options = GetOptions(interactionResult, interactionStrength);
         if (options == null || options.Length == 0)
         {
             return null;
@@ -50,28 +55,43 @@ public static class ReviewResolver
         return ReviewCatalog.Get(options[options.Length - 1].Kind);
     }
 
-    private static WeightedReviewKind[] GetOptions(InteractionResult interactionResult)
+    private static WeightedReviewKind[] GetOptions(InteractionResult interactionResult, int interactionStrength)
     {
         return interactionResult switch
         {
-            InteractionResult.Negative => new[]
-            {
-                new WeightedReviewKind(ReviewKind.NegativeReview, 78f),
-                new WeightedReviewKind(ReviewKind.Complaint, 20f),
-                new WeightedReviewKind(ReviewKind.ManagerEscalation, 2f),
-            },
+            InteractionResult.Negative => GetNegativeOptions(interactionStrength),
             InteractionResult.Neutral => new[]
             {
                 new WeightedReviewKind(ReviewKind.NegativeReview, 30f),
                 new WeightedReviewKind(ReviewKind.PositiveReview, 30f),
                 new WeightedReviewKind(ReviewKind.None, 40f),
             },
-            InteractionResult.Positive => new[]
-            {
-                new WeightedReviewKind(ReviewKind.PositiveReview, 98f),
-                new WeightedReviewKind(ReviewKind.PraiseBook, 2f),
-            },
+            InteractionResult.Positive => GetPositiveOptions(interactionStrength),
             _ => null,
+        };
+    }
+
+    private static WeightedReviewKind[] GetNegativeOptions(int interactionStrength)
+    {
+        var extraNegative = Mathf.Max(0, -interactionStrength - 5);
+
+        return new[]
+        {
+            new WeightedReviewKind(ReviewKind.NegativeReview, Mathf.Max(8f, 84f - (extraNegative * 6f))),
+            new WeightedReviewKind(ReviewKind.Complaint, 14f + (extraNegative * 5f)),
+            new WeightedReviewKind(ReviewKind.ManagerEscalation, 2f + (extraNegative * 1.5f)),
+        };
+    }
+
+    private static WeightedReviewKind[] GetPositiveOptions(int interactionStrength)
+    {
+        var extraPositive = Mathf.Max(0, interactionStrength - 5);
+
+        return new[]
+        {
+            new WeightedReviewKind(ReviewKind.PositiveReview, Mathf.Max(8f, 84f - (extraPositive * 6f))),
+            new WeightedReviewKind(ReviewKind.Recommendation, 14f + (extraPositive * 5f)),
+            new WeightedReviewKind(ReviewKind.PraiseBook, 2f + (extraPositive * 1.5f)),
         };
     }
 
