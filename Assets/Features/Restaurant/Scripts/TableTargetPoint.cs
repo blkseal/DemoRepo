@@ -6,6 +6,9 @@ public class TableTargetPoint : MonoBehaviour
 {
     [SerializeField] private TableSitPoint[] sitPoints;
     [SerializeField] private Vector3 seatOffset = Vector3.zero;
+    [SerializeField] private TableZone tableZone;
+
+    public TableZone TableZone => tableZone;
 
     public bool IsEmpty()
     {
@@ -103,4 +106,13 @@ public class TableTargetPoint : MonoBehaviour
 
         sitPoint.Release();
     }
+
+    /// <summary>Returns true if the sit point at the given index is currently occupied by an NPC.</summary>
+    public bool IsSitOccupied(int index)
+    {
+        if (sitPoints == null || index < 0 || index >= sitPoints.Length) return false;
+        return sitPoints[index] != null && sitPoints[index].IsOccupied;
+    }
+
+    public int SitPointCount => sitPoints != null ? sitPoints.Length : 0;
 }
