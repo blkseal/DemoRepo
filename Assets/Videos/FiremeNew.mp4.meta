@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f8838619dd4c0d54b84e60a8aeef0f3b
+guid: 8868311f47cadb44895d185ad5456eef
 VideoClipImporter:
   externalObjects: {}
   serializedVersion: 3
@@ -15,11 +15,11 @@ VideoClipImporter:
   targetSettings:
     :
       enableTranscoding: 1
-      codec: 3
+      codec: 0
       resizeFormat: 0
       aspectRatio: 0
-      customWidth: 1280
-      customHeight: 720
+      customWidth: 1920
+      customHeight: 1080
       bitrateMode: 2
       spatialQuality: 2
   userData: 
