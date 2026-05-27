@@ -29,6 +29,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
     private Vector3 queueSlotPosition;
     private bool hasInteracted;
     private bool isSitting;
+    private bool isLeaving;      // true when standing up and walking to exit
     private NpcGroupInteractable groupRoot;
     private Collider npcCollider;
     private float noCollisionTimer = 0f;
@@ -154,8 +155,8 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             return;
         }
 
-        // Prevent group NPCs from entering other triggers
-        if (groupRoot != null)
+        // Block group NPCs UNLESS they are actively walking to the exit
+        if (groupRoot != null && !isLeaving)
         {
             return;
         }
@@ -389,6 +390,48 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         }
 
         Destroy(gameObject);
+    }
+
+    /// <summary>
+    /// Stands the NPC up from the chair and walks them to the restaurant exit.
+    /// The NPC is destroyed automatically when it reaches LeaveRestaurantTargetPoint.
+    /// </summary>
+    public void StandUpAndLeave()
+    {
+        if (isLeaving) return;
+        isLeaving = true;
+
+        // Release the seat so other groups can sit here
+        if (occupiedSitPoint != null && tableTargetPoint != null)
+        {
+            tableTargetPoint.ReleaseSeat(occupiedSitPoint);
+            occupiedSitPoint = null;
+        }
+
+        // Stand up
+        isSitting = false;
+        if (animator != null)
+        {
+            animator.SetBool("IsSitting", false);
+        }
+
+        // Re-enable NavMeshAgent
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.isStopped = false;
+        }
+
+        // Walk to the exit
+        if (leaveRestaurantTargetPoint != null && agent != null)
+        {
+            agent.SetDestination(leaveRestaurantTargetPoint.transform.position);
+        }
+        else
+        {
+            // No exit point configured – just despawn immediately
+            Despawn();
+        }
     }
 
     private bool IsInInteractionRange()
