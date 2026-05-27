@@ -137,6 +137,7 @@ public class NpcSpawnManager : MonoBehaviour
         groupRootObject.transform.rotation = spawnPoint.transform.rotation;
 
         var group = groupRootObject.AddComponent<NpcGroupInteractable>();
+        group.SetTableZone(tableTarget.TableZone);
         var groupMembers = new List<NpcInteractable>();
         var reservedSeats = tableTarget.ReserveSeats(groupSize);
 
