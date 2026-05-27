@@ -1557,6 +1557,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: -7316808792608765512, guid: 3365c8d887790cb41a503f2d62874c2e, type: 3}
+    - target: {fileID: 7426398693605230397, guid: 25082f833fada6a4f9f0674e88bc804b, type: 3}
+      propertyPath: plateType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 7472677114098089339, guid: 25082f833fada6a4f9f0674e88bc804b, type: 3}
       propertyPath: m_Name
       value: PlateCounter (2)
@@ -3195,7 +3199,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1943645890476536058, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 1943645890476536058, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3203,7 +3207,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4434910587765187097, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.237
+      value: 0.314
       objectReference: {fileID: 0}
     - target: {fileID: 5892966162639933770, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_IsActive
@@ -3211,7 +3215,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8254167054124316943, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.06
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 8254167054124316943, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3219,7 +3223,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9068542625343117665, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.245
+      value: 0.369
       objectReference: {fileID: 0}
     - target: {fileID: 9068542625343117665, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3671,6 +3675,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7426398693605230397, guid: 6dc4be14eed15ab469d40c675680b7d5, type: 3}
+      propertyPath: plateType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7472677114098089339, guid: 6dc4be14eed15ab469d40c675680b7d5, type: 3}
       propertyPath: m_Name
       value: PlateCounter (1)
@@ -3823,7 +3831,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1943645890476536058, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.118
+      value: 0.19
       objectReference: {fileID: 0}
     - target: {fileID: 1943645890476536058, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3831,7 +3839,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4434910587765187097, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.137
+      value: 0.232
       objectReference: {fileID: 0}
     - target: {fileID: 8254167054124316943, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3839,7 +3847,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8254167054124316943, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.179
+      value: 0.32
       objectReference: {fileID: 0}
     - target: {fileID: 8254167054124316943, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3847,7 +3855,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9068542625343117665, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.135
+      value: 0.246
       objectReference: {fileID: 0}
     - target: {fileID: 9068542625343117665, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4116,12 +4124,28 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1943645890476536058, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.18
+      objectReference: {fileID: 0}
+    - target: {fileID: 1943645890476536058, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.z
       value: -0.37
+      objectReference: {fileID: 0}
+    - target: {fileID: 4434910587765187097, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 8254167054124316943, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.14
       objectReference: {fileID: 0}
     - target: {fileID: 8254167054124316943, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9068542625343117665, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.14
       objectReference: {fileID: 0}
     - target: {fileID: 9068542625343117665, guid: 87a8e3687662be64b87ee7c543064bc1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4269,6 +4293,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: -3805317474220022, guid: 8930ad8a3bd1949488c280f9460d5b1e, type: 3}
+    - target: {fileID: 7426398693605230397, guid: 6dc4be14eed15ab469d40c675680b7d5, type: 3}
+      propertyPath: plateType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7472677114098089339, guid: 6dc4be14eed15ab469d40c675680b7d5, type: 3}
       propertyPath: m_Name
       value: PlateCounter (3)
