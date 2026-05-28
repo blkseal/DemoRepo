@@ -29,7 +29,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
     private Vector3 queueSlotPosition;
     private bool hasInteracted;
     private bool isSitting;
-    private bool isLeavingRestaurant;
+    private bool isLeaving;      // true when standing up and walking to exit
     private NpcGroupInteractable groupRoot;
     private Collider npcCollider;
     private float noCollisionTimer = 0f;
@@ -82,7 +82,7 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
 
     private void Update()
     {
-        if (isSitting && !isLeavingRestaurant)
+        if (isSitting)
         {
             return;
         }
@@ -105,14 +105,11 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             }
         }
 
-        // Handle seating logic - FIXED WITH NAVMESH GUARD
-        if (tableTargetPoint != null && reservedSitPoint != null && agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
+        // Handle seating logic - UNCHANGED
+        if (tableTargetPoint != null && reservedSitPoint != null && agent != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
         {
-            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
-            {
-                SeatAt(reservedSitPoint.transform, tableTargetPoint, reservedSitPoint);
-                return;
-            }
+            SeatAt(reservedSitPoint.transform, tableTargetPoint, reservedSitPoint);
+            return;
         }
 
         if (tableTargetPoint != null && reservedSitPoint == null && agent != null && !agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
@@ -158,8 +155,8 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             return;
         }
 
-        // Prevent group NPCs from entering other triggers
-        if (groupRoot != null)
+        // Block group NPCs UNLESS they are actively walking to the exit
+        if (groupRoot != null && !isLeaving)
         {
             return;
         }
@@ -364,7 +361,6 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             agent.ResetPath();
             agent.Warp(seatPosition);
             agent.enabled = false;
-
         }
 
         transform.position = seatPosition;
@@ -396,6 +392,48 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         Destroy(gameObject);
     }
 
+    /// <summary>
+    /// Stands the NPC up from the chair and walks them to the restaurant exit.
+    /// The NPC is destroyed automatically when it reaches LeaveRestaurantTargetPoint.
+    /// </summary>
+    public void StandUpAndLeave()
+    {
+        if (isLeaving) return;
+        isLeaving = true;
+
+        // Release the seat so other groups can sit here
+        if (occupiedSitPoint != null && tableTargetPoint != null)
+        {
+            tableTargetPoint.ReleaseSeat(occupiedSitPoint);
+            occupiedSitPoint = null;
+        }
+
+        // Stand up
+        isSitting = false;
+        if (animator != null)
+        {
+            animator.SetBool("IsSitting", false);
+        }
+
+        // Re-enable NavMeshAgent
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.isStopped = false;
+        }
+
+        // Walk to the exit
+        if (leaveRestaurantTargetPoint != null && agent != null)
+        {
+            agent.SetDestination(leaveRestaurantTargetPoint.transform.position);
+        }
+        else
+        {
+            // No exit point configured â€“ just despawn immediately
+            Despawn();
+        }
+    }
+
     private bool IsInInteractionRange()
     {
         var referencePoint = takeAwayTargetPoint != null ? takeAwayTargetPoint.transform.position : transform.position;
@@ -411,76 +449,5 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         }
 
         return step.Options[index].Label;
-    }
-    public void ForceLeaveRestaurant()
-    {
-        // 1. Liberta o estado lógico e impede o Update de interferir
-        isLeavingRestaurant = true;
-        isSitting = false;
-
-        // 2. Remove o parentesco caso ele esteja acoplado à cadeira
-        transform.SetParent(null);
-
-        // 3. Atualiza o Animator para ele levantar e andar
-        if (animator != null)
-        {
-            animator.SetBool("IsSitting", false);
-            animator.Play("Walk", 0, 0f); // Força o estado de caminhada
-        }
-
-        // 4. Liberta logo a cadeira para o próximo cliente
-        if (occupiedSitPoint != null && tableTargetPoint != null)
-        {
-            tableTargetPoint.ReleaseSeat(occupiedSitPoint);
-            occupiedSitPoint = null;
-        }
-
-        // 5. Configuração segura do NavMeshAgent
-        if (agent != null)
-        {
-            // ATIVAÇÃO CRUCIAL: Acorda o componente antes de mexer nele
-            agent.enabled = true;
-
-            // WARP DE SEGURANÇA: Coloca o NPC ligeiramente atrás/fora da mesa
-            Vector3 escapePosition = transform.position - (transform.forward * 0.8f);
-
-            // Valida se a posição de escape toca na NavMesh antes do Warp
-            if (NavMesh.SamplePosition(escapePosition, out NavMeshHit hit, 2.0f, NavMesh.AllAreas))
-            {
-                agent.Warp(hit.position);
-            }
-            else
-            {
-                agent.Warp(escapePosition);
-            }
-
-            // 6. Só dá ordens se ele estiver devidamente colado à NavMesh
-            if (agent.isOnNavMesh)
-            {
-                agent.isStopped = false;
-
-                if (leaveRestaurantTargetPoint != null)
-                {
-                    agent.SetDestination(leaveRestaurantTargetPoint.transform.position);
-                }
-                else if (postAnswerTargetPoint != null)
-                {
-                    agent.SetDestination(postAnswerTargetPoint.position);
-                }
-            }
-            else
-            {
-                Debug.LogWarning($"{name} não conseguiu ancorar na NavMesh ao tentar sair!");
-            }
-        }
-
-        // Sai da fila (caso estivesse nela)
-        if (targetPoint != null)
-        {
-            targetPoint.ExitQueue(this);
-        }
-
-        // 7. Destrói o NPC de forma segura após 15 segundos (tempo de caminhar até à porta)
-        Destroy(gameObject, 15f);
     }
 }

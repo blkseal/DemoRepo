@@ -587,9 +587,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65631d98cd771246b923090c0985849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
-  queueDirection: {fileID: 0}
-  queueSpacing: 2
-  navMeshSampleRadius: 1
+  queueSlots: []
+  triggerCollider: {fileID: 0}
 --- !u!114 &438588070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -608,6 +607,7 @@ MonoBehaviour:
   - {fileID: 1195942949}
   - {fileID: 1202243089}
   seatOffset: {x: 0, y: -5, z: 0}
+  tableZone: {fileID: 0}
 --- !u!1 &454547105
 GameObject:
   m_ObjectHideFlags: 0
@@ -902,9 +902,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65631d98cd771246b923090c0985849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
-  queueDirection: {fileID: 0}
-  queueSpacing: 2
-  navMeshSampleRadius: 1
+  queueSlots: []
+  triggerCollider: {fileID: 0}
 --- !u!114 &556301071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -923,6 +922,7 @@ MonoBehaviour:
   - {fileID: 509905958}
   - {fileID: 1107296849}
   seatOffset: {x: 0, y: -5, z: 0}
+  tableZone: {fileID: 0}
 --- !u!1 &597290064
 GameObject:
   m_ObjectHideFlags: 0
@@ -978,6 +978,7 @@ MonoBehaviour:
   - {fileID: 1201736915}
   - {fileID: 1682591529}
   seatOffset: {x: 0, y: -5, z: 0}
+  tableZone: {fileID: 0}
 --- !u!114 &597290067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -990,9 +991,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65631d98cd771246b923090c0985849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
-  queueDirection: {fileID: 0}
-  queueSpacing: 2
-  navMeshSampleRadius: 1
+  queueSlots: []
+  triggerCollider: {fileID: 0}
 --- !u!1 &600562764
 GameObject:
   m_ObjectHideFlags: 0
@@ -1038,6 +1038,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b9f083cd134ae43a29f101e6402c16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TakeAwayTargetPoint
+  queueSlots: []
+  triggerCollider: {fileID: 0}
+  postConversationTargetPoints: []
 --- !u!114 &600562767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1050,9 +1053,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65631d98cd771246b923090c0985849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
-  queueDirection: {fileID: 1635911289}
-  queueSpacing: 1.2
-  navMeshSampleRadius: 1
+  queueSlots: []
+  triggerCollider: {fileID: 0}
 --- !u!1 &631009728
 GameObject:
   m_ObjectHideFlags: 0
@@ -1571,9 +1573,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65631d98cd771246b923090c0985849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
-  queueDirection: {fileID: 0}
-  queueSpacing: 2
-  navMeshSampleRadius: 1
+  queueSlots: []
+  triggerCollider: {fileID: 0}
 --- !u!114 &879664163
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1592,6 +1593,7 @@ MonoBehaviour:
   - {fileID: 1142523287}
   - {fileID: 454547107}
   seatOffset: {x: 0, y: -5, z: 0}
+  tableZone: {fileID: 0}
 --- !u!1 &896665746
 GameObject:
   m_ObjectHideFlags: 0
@@ -1823,9 +1825,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65631d98cd771246b923090c0985849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
-  queueDirection: {fileID: 0}
-  queueSpacing: 2
-  navMeshSampleRadius: 1
+  queueSlots: []
+  triggerCollider: {fileID: 0}
 --- !u!114 &1030806597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1844,6 +1845,7 @@ MonoBehaviour:
   - {fileID: 177030479}
   - {fileID: 680535930}
   seatOffset: {x: 0, y: -5, z: 0}
+  tableZone: {fileID: 0}
 --- !u!1 &1059986890
 GameObject:
   m_ObjectHideFlags: 0
@@ -2555,10 +2557,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Garcom
       objectReference: {fileID: 0}
+    - target: {fileID: 3171361569379983690, guid: 298213078922a96468a5706675555bd0, type: 3}
+      propertyPath: m_TagString
+      value: Ajudante
+      objectReference: {fileID: 0}
     - target: {fileID: 7879934719058972664, guid: 298213078922a96468a5706675555bd0, type: 3}
       propertyPath: cozinhaTarget
       value: 
       objectReference: {fileID: 1750622078}
+    - target: {fileID: 7879934719058972664, guid: 298213078922a96468a5706675555bd0, type: 3}
+      propertyPath: targetEspecial
+      value: 
+      objectReference: {fileID: 1940535089}
     - target: {fileID: 7879934719058972664, guid: 298213078922a96468a5706675555bd0, type: 3}
       propertyPath: 'targetsMesas.Array.data[0]'
       value: 
@@ -2621,6 +2631,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b9f083cd134ae43a29f101e6402c16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TakeAwayTargetPoint
+  queueSlots: []
+  triggerCollider: {fileID: 0}
+  postConversationTargetPoints: []
 --- !u!1 &1646923402
 GameObject:
   m_ObjectHideFlags: 0
@@ -2916,9 +2929,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65631d98cd771246b923090c0985849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
-  queueDirection: {fileID: 480904931}
-  queueSpacing: 2
-  navMeshSampleRadius: 1
+  queueSlots: []
+  triggerCollider: {fileID: 0}
 --- !u!1 &1928124241
 GameObject:
   m_ObjectHideFlags: 0
@@ -2964,6 +2976,68 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TableSitPoint
   occupied: 0
+--- !u!1001 &1940535088
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.522
+      objectReference: {fileID: 0}
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.34
+      objectReference: {fileID: 0}
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 51.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3313454052789701092, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+      propertyPath: m_Name
+      value: death
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+--- !u!4 &1940535089 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
+  m_PrefabInstance: {fileID: 1940535088}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2010222605
 GameObject:
   m_ObjectHideFlags: 0
@@ -3294,6 +3368,7 @@ MonoBehaviour:
   - {fileID: 47561884}
   - {fileID: 1821490040}
   seatOffset: {x: 0, y: -5, z: 0}
+  tableZone: {fileID: 0}
 --- !u!114 &2144341125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3306,9 +3381,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65631d98cd771246b923090c0985849, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NpcTargetPoint
-  queueDirection: {fileID: 0}
-  queueSpacing: 2
-  navMeshSampleRadius: 1
+  queueSlots: []
+  triggerCollider: {fileID: 0}
 --- !u!1001 &4550094975550117799
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3388,7 +3462,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5221980783396125489, guid: 5952028388c6dcf4e84998a76b8590f9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 52.07
+      value: 49.13
       objectReference: {fileID: 0}
     - target: {fileID: 5221980783396125489, guid: 5952028388c6dcf4e84998a76b8590f9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3437,7 +3511,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1115905210223649225, guid: df836f34dcd9fdf41a5d9d1bb4c4ff61, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.93
+      value: -9.54
       objectReference: {fileID: 0}
     - target: {fileID: 1115905210223649225, guid: df836f34dcd9fdf41a5d9d1bb4c4ff61, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3490,7 +3564,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -12.9
+      value: -9.6
       objectReference: {fileID: 0}
     - target: {fileID: 363740336212109554, guid: 16c4fe52a54016745b106fc9f95f0103, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3552,6 +3626,7 @@ SceneRoots:
   - {fileID: 7631489901866180497}
   - {fileID: 5236282543510777562}
   - {fileID: 8193206990769221620}
+  - {fileID: 1940535088}
   - {fileID: 4550094975550117799}
   - {fileID: 1607004845}
   - {fileID: 2138113565}
