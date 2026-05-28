@@ -90,6 +90,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0074d7f602bfe404bbf4e5df8552b078, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3463206029688801666}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0074d7f602bfe404bbf4e5df8552b078, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2183193163615179886}
   m_SourcePrefab: {fileID: 100100000, guid: 0074d7f602bfe404bbf4e5df8552b078, type: 3}
 --- !u!1 &5771658598390497475 stripped
 GameObject:
@@ -189,6 +192,7 @@ MonoBehaviour:
   agent: {fileID: 580629169789412056}
   animator: {fileID: 0}
   sittingYOffset: 0.1
+  sittingForwardOffset: 0
 --- !u!114 &7791839789884982207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -227,3 +231,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2183193163615179886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5771658598390497475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1893647d9de471c449fc6bbf92fc24a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaitTimeSystem
+  maxWaitTime: 30
+  suspicionPenalty: 10
+  reviewPenalty: -15

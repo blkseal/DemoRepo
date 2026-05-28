@@ -205,7 +205,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "I'd suggest the veggie wrap.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "Stop being vegetarian.", AnswerValue = -2, NextStepId = "end" },
+                        new ConversationOption { Label = "Stop being vegetarian.", AnswerValue = -4, NextStepId = "end" },
                     },
                 },
             },
@@ -261,7 +261,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "Absolutely.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "Straight out of the tree.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "Straight out of the tree.", AnswerValue = -1, NextStepId = "end" },
                     },
                 },
             },
@@ -278,7 +278,7 @@ public static class PhoneCallConversationDatabase
                     Question = "Hey, just wanted to say the food was great last time.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "Thank you, we appreciate it!", AnswerValue = 1, NextStepId = "generic_10_followup" },
+                        new ConversationOption { Label = "Thank you, we appreciate it!", AnswerValue = 2, NextStepId = "generic_10_followup" },
                         new ConversationOption { Label = "Oh. Ok...", AnswerValue = 1, NextStepId = "generic_10_followup" },
                     },
                 },
@@ -288,7 +288,7 @@ public static class PhoneCallConversationDatabase
                     Question = "Seriously, I was impressed.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "Glad to hear it.", AnswerValue = 1, NextStepId = "end" },
+                        new ConversationOption { Label = "Glad to hear it.", AnswerValue = 2, NextStepId = "end" },
                         new ConversationOption { Label = "Please, for the love of god, do NOT leave a good review.", AnswerValue = 0, NextStepId = "end" },
                     },
                 },
@@ -321,7 +321,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "We'll do our best.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "Don't even bother coming.", AnswerValue = -1, NextStepId = "end" },
+                        new ConversationOption { Label = "Don't even bother coming.", AnswerValue = -2, NextStepId = "end" },
                     },
                 },
             },
@@ -339,7 +339,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "We currently have a 30 minutes wait time.", AnswerValue = 0, NextStepId = "path_a" },
-                        new ConversationOption { Label = "No.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "No.", AnswerValue = -2, NextStepId = "end" },
                     },
                 },
                 new ConversationStep
@@ -348,7 +348,7 @@ public static class PhoneCallConversationDatabase
                     Question = "That is too long, can't you do it faster?",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "Sure, I'll just teleport to you.", AnswerValue = -1, NextStepId = "path_a" },
+                        new ConversationOption { Label = "Sure, I'll just teleport to you.", AnswerValue = -1, NextStepId = "end" },
                         new ConversationOption { Label = "No, but I could make it slower.", AnswerValue = -1, NextStepId = "karen_02_end" },
                     },
                 },
@@ -358,13 +358,13 @@ public static class PhoneCallConversationDatabase
                     Question = "Unbelievable. I should speak to your manager.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "Please do.", AnswerValue = -1, NextStepId = "end" },
-                        new ConversationOption { Label = "Please don't.", AnswerValue = -1, NextStepId = "end" },
+                        new ConversationOption { Label = "Please do.", AnswerValue = 1, NextStepId = "end" },
+                        new ConversationOption { Label = "Please don't.", AnswerValue = -5, NextStepId = "end" },
                     },
                 },
             },
         },
-        new ConversationDefinition // Review from here
+        new ConversationDefinition 
         {
             Id = "Phone_Karen_03",
             StartStepId = "start",
@@ -377,7 +377,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "Of course.", AnswerValue = 1, NextStepId = "karen_03_followup" },
-                        new ConversationOption { Label = "Best I can do is charge extra.", AnswerValue = -1, NextStepId = "end" },
+                        new ConversationOption { Label = "Best I can do is charge extra.", AnswerValue = -2, NextStepId = "end" },
                     },
                 },
                 new ConversationStep
@@ -386,8 +386,8 @@ public static class PhoneCallConversationDatabase
                     Question = "Good. They know me there.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "I'll make a note of it.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "And I know the menu.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "I'll make a note of it.", AnswerValue = 3, NextStepId = "end" },
+                        new ConversationOption { Label = "I don't.", AnswerValue = -1, NextStepId = "end" },
                     },
                 },
             },
@@ -404,8 +404,8 @@ public static class PhoneCallConversationDatabase
                     Question = "Your website says free delivery. Why am I being charged?",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "Let me check that for you.", AnswerValue = 1, NextStepId = "karen_04_followup" },
-                        new ConversationOption { Label = "Because nothing in life is free.", AnswerValue = -1, NextStepId = "end" },
+                        new ConversationOption { Label = "Our site... You mean Google?", AnswerValue = -2, NextStepId = "karen_04_followup" },
+                        new ConversationOption { Label = "Must be a mistake.", AnswerValue = -1, NextStepId = "karen_04_followup" },
                     },
                 },
                 new ConversationStep
@@ -415,7 +415,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "I'll sort it out.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "Your patience is on backorder.", AnswerValue = -1, NextStepId = "end" },
+                        new ConversationOption { Label = "There's nothing I can do, you'll need to pay.", AnswerValue = -1, NextStepId = "end" },
                     },
                 },
             },
@@ -443,7 +443,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "We'll hurry.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "Fast, onion-free, and haunted by your energy.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "Fast and Onion free.", AnswerValue = 0, NextStepId = "end" },
                     },
                 },
             },
@@ -460,18 +460,8 @@ public static class PhoneCallConversationDatabase
                     Question = "I want to speak to whoever is in charge.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "I'll get the manager.", AnswerValue = 0, NextStepId = "karen_06_followup" },
-                        new ConversationOption { Label = "That's me. Be afraid.", AnswerValue = -1, NextStepId = "end" },
-                    },
-                },
-                new ConversationStep
-                {
-                    StepId = "karen_06_followup",
-                    Question = "Finally, someone sensible.",
-                    Options = new[]
-                    {
-                        new ConversationOption { Label = "One moment please.", AnswerValue = 0, NextStepId = "end" },
-                        new ConversationOption { Label = "You're welcome.", AnswerValue = 1, NextStepId = "end" },
+                        new ConversationOption { Label = "I'll get the manager.", AnswerValue = -10, NextStepId = "end" },
+                        new ConversationOption { Label = "*Hang up*", AnswerValue = -1, NextStepId = "end" },
                     },
                 },
             },
@@ -531,7 +521,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "We will.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "No pressure at all.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "We have the finest filet mignon.", AnswerValue = 2, NextStepId = "end" },
                     },
                 },
             },
@@ -558,8 +548,8 @@ public static class PhoneCallConversationDatabase
                     Question = "Good. I expect red carpet treatment.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "Absolutely.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "We only have black carpet.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "Absolutely.", AnswerValue = 2, NextStepId = "end" },
+                        new ConversationOption { Label = "We don't have a carpet", AnswerValue = -1, NextStepId = "end" },
                     },
                 },
             },
@@ -587,7 +577,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "I'll make it happen.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "That sounds like a fun invoice.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "That sounds like a fun invoice.", AnswerValue = 1, NextStepId = "end" },
                     },
                 },
             },
@@ -604,8 +594,8 @@ public static class PhoneCallConversationDatabase
                     Question = "I'd like your most expensive wine recommendation.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "I have the perfect bottle for you.", AnswerValue = 1, NextStepId = "rich_04_followup" },
-                        new ConversationOption { Label = "Wine all tastes the same anyway.", AnswerValue = -1, NextStepId = "end" },
+                        new ConversationOption { Label = "I have the perfect bottle for you.", AnswerValue = 2, NextStepId = "rich_04_followup" },
+                        new ConversationOption { Label = "Wine all tastes the same anyway.", AnswerValue = -2, NextStepId = "end" },
                     },
                 },
                 new ConversationStep
@@ -614,7 +604,7 @@ public static class PhoneCallConversationDatabase
                     Question = "Make sure it's impressive.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "Absolutely.", AnswerValue = 1, NextStepId = "end" },
+                        new ConversationOption { Label = "Absolutely. Would you like an appetizer aswell?", AnswerValue = 3, NextStepId = "end" },
                         new ConversationOption { Label = "Impressive is our middle name.", AnswerValue = 0, NextStepId = "end" },
                     },
                 },
@@ -633,7 +623,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "I'll prioritize it personally.", AnswerValue = 1, NextStepId = "rich_05_followup" },
-                        new ConversationOption { Label = "Everyone waits their turn.", AnswerValue = -1, NextStepId = "end" },
+                        new ConversationOption { Label = "Everyone waits their turn.", AnswerValue = -4, NextStepId = "end" },
                     },
                 },
                 new ConversationStep
@@ -643,7 +633,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "Understood.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "Nobody does, honestly.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "Nobody does, honestly.", AnswerValue = 1, NextStepId = "end" },
                     },
                 },
             },
@@ -661,17 +651,17 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "Then you've called the right place.", AnswerValue = 1, NextStepId = "rich_06_followup" },
-                        new ConversationOption { Label = "Good, because it'll cost you.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "Right... What will you have?", AnswerValue = 1, NextStepId = "end" },
                     },
                 },
                 new ConversationStep
                 {
                     StepId = "rich_06_followup",
-                    Question = "Excellent. No compromises.",
+                    Question = "I want Japanese Wagyu, and a bottle of your finest wine",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "No compromises.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "Only tasteful ones.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "We can do Japanese chicken and a bottle of our vinest vinegar.", AnswerValue = -3, NextStepId = "end" },
+                        new ConversationOption { Label = "Of course, only the best for you.", AnswerValue = 3, NextStepId = "end" },
                     },
                 },
             },
@@ -689,7 +679,7 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "We'll make it happen.", AnswerValue = 1, NextStepId = "rich_07_followup" },
-                        new ConversationOption { Label = "No promises.", AnswerValue = -1, NextStepId = "end" },
+                        new ConversationOption { Label = "Then why only call now?", AnswerValue = -3, NextStepId = "end" },
                     },
                 },
                 new ConversationStep
@@ -698,8 +688,8 @@ public static class PhoneCallConversationDatabase
                     Question = "Good. They have expensive taste.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "Then we're ready.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "So do we, apparently.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "And we have expensive food.", AnswerValue = 2, NextStepId = "end" },
+                        new ConversationOption { Label = "Aren't they just snobs?", AnswerValue = -2, NextStepId = "end" },
                     },
                 },
             },
@@ -717,17 +707,17 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "I'll speak with the chef immediately.", AnswerValue = 1, NextStepId = "rich_08_followup" },
-                        new ConversationOption { Label = "The menu exists for a reason.", AnswerValue = -1, NextStepId = "end" },
+                        new ConversationOption { Label = "The menu exists for a reason.", AnswerValue = -2, NextStepId = "end" },
                     },
                 },
                 new ConversationStep
                 {
                     StepId = "rich_08_followup",
-                    Question = "Perfect. Something exclusive would be ideal.",
+                    Question = "Perfect. Something exclusive would be ideal. Like Almas Caviar.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "We'll handle it.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "Exclusive is just expensive with attitude.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "We'll handle it.", AnswerValue = 3, NextStepId = "end" },
+                        new ConversationOption { Label = "How do you expect us to have that?", AnswerValue = -3, NextStepId = "end" },
                     },
                 },
             },
@@ -751,11 +741,11 @@ public static class PhoneCallConversationDatabase
                 new ConversationStep
                 {
                     StepId = "rich_09_followup",
-                    Question = "Good. Generosity matters.",
+                    Question = "Good. I don't mind paying double.",
                     Options = new[]
                     {
-                        new ConversationOption { Label = "We'll make it generous.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "It's one way to say 'overflowing'.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "You'll be well served.", AnswerValue = 1, NextStepId = "end" },
+                        new ConversationOption { Label = "What about paying triple?", AnswerValue = -1, NextStepId = "end" },
                     },
                 },
             },
@@ -783,14 +773,14 @@ public static class PhoneCallConversationDatabase
                     Options = new[]
                     {
                         new ConversationOption { Label = "Happy to help.", AnswerValue = 1, NextStepId = "end" },
-                        new ConversationOption { Label = "Premium attitude, premium inconvenience.", AnswerValue = 0, NextStepId = "end" },
+                        new ConversationOption { Label = "Premium attitude, premium inconvenience.", AnswerValue = -1, NextStepId = "end" },
                     },
                 },
             },
         },
     };
 
-    public static readonly ConversationDefinition[] ChillGuyConversations =
+    public static readonly ConversationDefinition[] ChillGuyConversations = // UNREVIEWED / AI WRITTEN
     {
         new ConversationDefinition
         {

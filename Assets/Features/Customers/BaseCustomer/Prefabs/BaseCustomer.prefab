@@ -98,6 +98,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9c8743240c5df2845b96ddd9767918cf, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5864115396250483653}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9c8743240c5df2845b96ddd9767918cf, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3201984283341454576}
   m_SourcePrefab: {fileID: 100100000, guid: 9c8743240c5df2845b96ddd9767918cf, type: 3}
 --- !u!1 &7942778467665607026 stripped
 GameObject:
@@ -170,6 +173,7 @@ MonoBehaviour:
   agent: {fileID: 6001266585873286143}
   animator: {fileID: 0}
   sittingYOffset: 0
+  sittingForwardOffset: 0
 --- !u!95 &372901745945537214
 Animator:
   serializedVersion: 7
@@ -235,3 +239,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &3201984283341454576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7942778467665607026}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1893647d9de471c449fc6bbf92fc24a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaitTimeSystem
+  maxWaitTime: 30
+  suspicionPenalty: 10
+  reviewPenalty: -15
+  destroyDelay: 4
