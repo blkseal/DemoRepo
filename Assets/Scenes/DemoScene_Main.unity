@@ -412,7 +412,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b758c13d9b9c2224ebd3d6bf327da1cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MouseLook
-  mouseSensitivity: 150
+  mouseSensitivity: 100
   playerBody: {fileID: 1059986894}
 --- !u!1 &140610681
 GameObject:
@@ -4760,7 +4760,6 @@ MonoBehaviour:
   - {fileID: 597290066}
   leaveRestaurantTargetPoint: {fileID: 1064505959}
   npcTag: NPC
-  maxNpcCount: 20
   maxGroupSize: 4
   spawnIntervalRange: {x: 3, y: 7}
   spawnOnStart: 1
