@@ -1,3 +1,12 @@
+Known bugs:
+- NPC groups get stuck trying to sit on a table;
+- Some NPC's start glitching out if they can't reach their desired target point;
+- Sometimes the End Screen doesn't show information, and instead the information is shown on top of a new game;
+
+Hopefully we'll get some more feedback from our demo.
+
+Project structure below
+
 ====================================================
 FIRE ME! - UNITY PROJECT STRUCTURE
 ====================================================
