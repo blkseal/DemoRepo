@@ -169,7 +169,7 @@ public class NpcInteractionUI : MonoBehaviour
         rootRect.anchorMin = new Vector2(0.5f, 0.5f);
         rootRect.anchorMax = new Vector2(0.5f, 0.5f);
         rootRect.sizeDelta = new Vector2(560f, 320f);
-        root.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.8f);
+        root.GetComponent<Image>().color = new Color(0.96f, 0.86f, 0.68f, 1f);
 
         titleLabel = CreateText("Title", root.transform, new Vector2(0f, 125f), new Vector2(520f, 32f), 22);
         titleRect = titleLabel.GetComponent<RectTransform>();
@@ -189,8 +189,8 @@ public class NpcInteractionUI : MonoBehaviour
         questionLabel.resizeTextMinSize = 16;
         questionLabel.resizeTextMaxSize = 24;
 
-        optionOneButton = CreateButton("OptionOne", root.transform, new Vector2(0f, 5f));
-        optionTwoButton = CreateButton("OptionTwo", root.transform, new Vector2(0f, -60f));
+        optionOneButton = CreateButton("OptionOne", root.transform, new Vector2(0f, -10f));
+        optionTwoButton = CreateButton("OptionTwo", root.transform, new Vector2(0f, -110f));
 
         optionOneLabel = optionOneButton.GetComponentInChildren<Text>();
         optionTwoLabel = optionTwoButton.GetComponentInChildren<Text>();
@@ -205,23 +205,25 @@ public class NpcInteractionUI : MonoBehaviour
         buttonObject.transform.SetParent(parent, false);
 
         var rect = buttonObject.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(460f, 50f);
+        rect.sizeDelta = new Vector2(520f, 70f); // maior e mais elegante
         rect.anchoredPosition = anchoredPosition;
 
         var image = buttonObject.GetComponent<Image>();
-        image.color = new Color(1f, 1f, 1f, 0.95f);
+        image.color = new Color(0.90f, 0.90f, 0.90f, 1f); // cinza suave
 
-        var label = CreateText("Label", buttonObject.transform, Vector2.zero, rect.sizeDelta, 20);
+        // Bordas do botão
+        var outline = buttonObject.AddComponent<Outline>();
+        outline.effectColor = new Color(0f, 0f, 0f, 0.45f);
+        outline.effectDistance = new Vector2(3f, -3f);
+
+        var label = CreateText("Label", buttonObject.transform, Vector2.zero, rect.sizeDelta, 26);
         label.alignment = TextAnchor.MiddleCenter;
         label.color = Color.black;
-        label.horizontalOverflow = HorizontalWrapMode.Wrap;
-        label.verticalOverflow = VerticalWrapMode.Overflow;
-        label.resizeTextForBestFit = true;
-        label.resizeTextMinSize = 14;
-        label.resizeTextMaxSize = 20;
+        label.fontStyle = FontStyle.Bold;
 
         return buttonObject.GetComponent<Button>();
     }
+
 
     private static Text CreateText(string name, Transform parent, Vector2 anchoredPosition, Vector2 size, int fontSize)
     {
@@ -235,7 +237,8 @@ public class NpcInteractionUI : MonoBehaviour
         var text = textObject.GetComponent<Text>();
         text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         text.fontSize = fontSize;
-        text.color = Color.white;
+        text.color = Color.black;
+        text.fontStyle = FontStyle.Bold;
         text.text = string.Empty;
         return text;
     }

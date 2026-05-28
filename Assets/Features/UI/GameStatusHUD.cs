@@ -89,17 +89,18 @@ public class GameStatusHUD : MonoBehaviour
         panelRect.anchorMax = new Vector2(0f, 1f);
         panelRect.pivot = new Vector2(0f, 1f);
         panelRect.anchoredPosition = new Vector2(20f, -20f);
-        panelRect.sizeDelta = new Vector2(360f, 180f);
+        panelRect.sizeDelta = new Vector2(280f, 130f);
         panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.55f);
 
-        suspicionText = CreateText("Suspicion", panel.transform, new Vector2(0f, -20f), new Vector2(330f, 30f), 20);
+        suspicionText = CreateText("Suspicion", panel.transform, new Vector2(20f, -20f), new Vector2(330f, 30f), 24);
         suspicionText.alignment = TextAnchor.UpperLeft;
+        suspicionText.fontStyle = FontStyle.Bold;
 
-        reviewTitleText = CreateText("ReviewTitle", panel.transform, new Vector2(0f, -60f), new Vector2(330f, 30f), 20);
+        reviewTitleText = CreateText("ReviewTitle", panel.transform, new Vector2(20f, -60f), new Vector2(330f, 30f), 24);
         reviewTitleText.alignment = TextAnchor.UpperLeft;
         reviewTitleText.fontStyle = FontStyle.Bold;
 
-        reviewDescriptionText = CreateText("ReviewDescription", panel.transform, new Vector2(0f, -100f), new Vector2(330f, 70f), 16);
+        reviewDescriptionText = CreateText("ReviewDescription", panel.transform, new Vector2(20f, -100f), new Vector2(330f, 70f), 20);
         reviewDescriptionText.alignment = TextAnchor.UpperLeft;
         reviewDescriptionText.horizontalOverflow = HorizontalWrapMode.Wrap;
         reviewDescriptionText.verticalOverflow = VerticalWrapMode.Truncate;
