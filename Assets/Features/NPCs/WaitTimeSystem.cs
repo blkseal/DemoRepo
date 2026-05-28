@@ -3,11 +3,11 @@ using UnityEngine;
 public class WaitTimeSystem : MonoBehaviour
 {
     [Header("Wait Time")]
-    [SerializeField] private float maxWaitTime = 15f;
+    [SerializeField] private float maxWaitTime = 90f;
 
     [Header("Penalties")]
-    [SerializeField] private int suspicionPenalty = 10;
-    [SerializeField] private int reviewPenalty = -15;
+    [SerializeField] private int suspicionPenalty = 5;
+    [SerializeField] private int reviewPenalty = -5;
 
     [Header("Leave Settings")]
     [SerializeField] private float destroyDelay = 4f;
@@ -39,6 +39,15 @@ public class WaitTimeSystem : MonoBehaviour
 
     private void CustomerComplains()
     {
+        // If this NPC is part of an NPC group (handled by NpcGroupInteractable),
+        // skip the individual wait/complain logic here so groups are handled by their own system.
+        var group = GetComponentInParent<NpcGroupInteractable>();
+        if (group != null)
+        {
+            Debug.Log($"{name} is part of a group — skipping individual wait complaint.");
+            return;
+        }
+
         hasComplained = true;
 
         Debug.Log($"{name} got tired of waiting and complained!");

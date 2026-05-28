@@ -168,10 +168,17 @@ public class NpcInteractionUI : MonoBehaviour
         rootRect = root.GetComponent<RectTransform>();
         rootRect.anchorMin = new Vector2(0.5f, 0.5f);
         rootRect.anchorMax = new Vector2(0.5f, 0.5f);
-        rootRect.sizeDelta = new Vector2(560f, 320f);
-        root.GetComponent<Image>().color = new Color(0.96f, 0.86f, 0.68f, 1f);
+        // Increased height so buttons fit comfortably inside the panel
+        rootRect.sizeDelta = new Vector2(560f, 420f);
+        // Yellow background for the dialog
+        root.GetComponent<Image>().color = new Color(0.96f, 0.87f, 0.65f, 0.95f);
 
-        titleLabel = CreateText("Title", root.transform, new Vector2(0f, 125f), new Vector2(520f, 32f), 22);
+        // Compute positions relative to the panel size so text stays visible
+        float panelHalf = rootRect.sizeDelta.y * 0.5f;
+        float titleY = panelHalf - 40f; // 40px from top
+        float questionY = panelHalf - 100f; // below the title
+
+        titleLabel = CreateText("Title", root.transform, new Vector2(0f, titleY), new Vector2(520f, 40f), 22);
         titleRect = titleLabel.GetComponent<RectTransform>();
         titleLabel.alignment = TextAnchor.MiddleCenter;
         titleLabel.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -180,7 +187,8 @@ public class NpcInteractionUI : MonoBehaviour
         titleLabel.resizeTextMinSize = 16;
         titleLabel.resizeTextMaxSize = 22;
 
-        questionLabel = CreateText("Question", root.transform, new Vector2(0f, 80f), new Vector2(520f, 80f), 24);
+        // Make question taller so longer questions fit and are visible
+        questionLabel = CreateText("Question", root.transform, new Vector2(0f, questionY), new Vector2(520f, 120f), 24);
         questionRect = questionLabel.GetComponent<RectTransform>();
         questionLabel.alignment = TextAnchor.MiddleCenter;
         questionLabel.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -270,17 +278,41 @@ public class NpcInteractionUI : MonoBehaviour
 
     private void LayoutButtons()
     {
+        // Use the panel height to compute a comfortable area for the question and buttons
+        var panelHeight = rootRect != null ? rootRect.sizeDelta.y : 420f;
         var questionHeight = questionRect != null ? questionRect.sizeDelta.y : 80f;
-        var questionBottom = 80f - questionHeight;
+
+        // Padding from the top of the panel to the question
+        float topPadding = 40f;
+        // Space between question bottom and first button
+        float betweenQuestionAndButtons = 10f;
+
+        // Compute Y for the first button area (relative to center anchored positions)
+        // Center origin => top is +panelHeight/2
+        float topY = (panelHeight * 0.5f) - topPadding;
+        float questionBottomY = topY - questionHeight;
+
+        // Determine button sizes
+        var oneRect = optionOneButton != null ? optionOneButton.GetComponent<RectTransform>() : null;
+        var twoRect = optionTwoButton != null ? optionTwoButton.GetComponent<RectTransform>() : null;
+        float oneHeight = oneRect != null ? oneRect.sizeDelta.y : 50f;
+        float twoHeight = twoRect != null ? twoRect.sizeDelta.y : 50f;
+        float spacing = 12f;
+
+        // Position the first button a little above the center between question bottom and panel middle
+        float firstButtonY = questionBottomY - betweenQuestionAndButtons - (oneHeight * 0.5f);
 
         if (optionTwoButton.gameObject.activeSelf)
         {
-            optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 35f);
-            optionTwoButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 95f);
+            // second button sits below the first with spacing
+            float secondButtonY = firstButtonY - (oneHeight * 0.5f) - spacing - (twoHeight * 0.5f);
+            optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, firstButtonY);
+            optionTwoButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, secondButtonY);
         }
         else
         {
-            optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, questionBottom - 65f);
+            // Single button centered under question
+            optionOneButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0f, firstButtonY);
         }
     }
 

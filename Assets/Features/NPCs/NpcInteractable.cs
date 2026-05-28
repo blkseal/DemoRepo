@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using System.Collections.Generic;
 
 public class NpcInteractable : MonoBehaviour, IConversationTarget
 {
@@ -30,8 +31,13 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
     private bool hasInteracted;
     private bool isSitting;
     private bool isLeaving;      // true when standing up and walking to exit
+    public bool IsLeaving => isLeaving;
     private NpcGroupInteractable groupRoot;
     private Collider npcCollider;
+
+    // Track ignored NPC colliders so we can restore collisions later
+    private readonly List<Collider> ignoredNpcColliders = new List<Collider>();
+
     private float noCollisionTimer = 0f;
     private const float NO_COLLISION_DURATION = 10f;
 
@@ -93,11 +99,8 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             noCollisionTimer -= Time.deltaTime;
             if (noCollisionTimer <= 0f)
             {
-                // Re-enable collisions
-                if (npcCollider != null)
-                {
-                    npcCollider.enabled = true;
-                }
+                // Restore ignored collisions
+                RestoreIgnoredNpcCollisions();
                 if (agent != null)
                 {
                     agent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
@@ -286,11 +289,9 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         // Start no-collision timer
         noCollisionTimer = NO_COLLISION_DURATION;
 
-        // Disable collisions immediately
-        if (npcCollider != null)
-        {
-            npcCollider.enabled = false;
-        }
+        // Instead of disabling our collider entirely (which would prevent triggers such as LeaveRestaurantTargetPoint),
+        // ignore collisions only with other NPC colliders so we can walk through them while still triggering leave areas.
+        StartIgnoreNpcCollisions();
 
         if (agent != null)
         {
@@ -321,6 +322,103 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
             SuspicionDelta = interactionStrength,
             ReviewPointsDelta = 0,
         };
+    }
+
+    // Called by external systems (e.g. WaitTimeSystem) to force this NPC to leave immediately.
+    // Handles both seated and standing NPCs.
+    public void ForceLeaveRestaurant()
+    {
+        if (isLeaving) return;
+        isLeaving = true;
+
+        // Cancel any active conversation and mark as interacted so player can't reopen dialog
+        conversationSession = null;
+        hasInteracted = true;
+
+        // If seated, release the seat and update animator
+        if (isSitting)
+        {
+            if (occupiedSitPoint != null && tableTargetPoint != null)
+            {
+                tableTargetPoint.ReleaseSeat(occupiedSitPoint);
+                occupiedSitPoint = null;
+            }
+
+            isSitting = false;
+            if (animator != null)
+                animator.SetBool("IsSitting", false);
+        }
+
+        // Exit any queue context
+        if (targetPoint != null)
+        {
+            targetPoint.ExitQueue(this);
+            targetPoint = null;
+        }
+
+        // Ensure NavMeshAgent is enabled to walk away
+        if (agent != null)
+        {
+            agent.enabled = true;
+            agent.isStopped = false;
+        }
+
+        // When forced to leave, make sure we can pass through other NPCs
+        noCollisionTimer = NO_COLLISION_DURATION;
+        StartIgnoreNpcCollisions();
+        if (agent != null)
+        {
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+        }
+
+        // Send to exit or despawn immediately if no exit
+        if (leaveRestaurantTargetPoint != null && agent != null)
+        {
+            agent.SetDestination(leaveRestaurantTargetPoint.transform.position);
+        }
+        else
+        {
+            Despawn();
+        }
+    }
+
+    private void StartIgnoreNpcCollisions()
+    {
+        if (npcCollider == null)
+            return;
+
+        // Find all NPCs in scene and ignore collisions with their colliders
+        var others = Object.FindObjectsOfType<NpcInteractable>();
+        foreach (var other in others)
+        {
+            if (other == null || other == this)
+                continue;
+
+            var otherCol = other.npcCollider;
+            if (otherCol == null)
+                continue;
+
+            // Ignore collisions between this and other NPC
+            Physics.IgnoreCollision(npcCollider, otherCol, true);
+            if (!ignoredNpcColliders.Contains(otherCol))
+                ignoredNpcColliders.Add(otherCol);
+        }
+    }
+
+    private void RestoreIgnoredNpcCollisions()
+    {
+        if (npcCollider == null)
+            return;
+
+        foreach (var otherCol in ignoredNpcColliders)
+        {
+            if (otherCol == null)
+                continue;
+
+            Physics.IgnoreCollision(npcCollider, otherCol, false);
+        }
+
+        ignoredNpcColliders.Clear();
     }
 
     private void MoveToExit()
@@ -420,6 +518,14 @@ public class NpcInteractable : MonoBehaviour, IConversationTarget
         {
             agent.enabled = true;
             agent.isStopped = false;
+        }
+
+        // Make sure leaving NPC can pass through other NPCs
+        noCollisionTimer = NO_COLLISION_DURATION;
+        StartIgnoreNpcCollisions();
+        if (agent != null)
+        {
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
         }
 
         // Walk to the exit

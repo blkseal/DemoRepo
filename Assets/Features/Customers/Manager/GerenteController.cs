@@ -20,6 +20,12 @@ public class GerenteController : MonoBehaviour
     private Animator animator;
     private bool eventoIniciado = false;
 
+    // Event to notify external systems when the gerente event finishes
+    public event System.Action OnEventFinished;
+
+    // Public property so others can check if event started
+    public bool HasEventStarted => eventoIniciado;
+
     void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -29,8 +35,18 @@ public class GerenteController : MonoBehaviour
     void Start()
     {
         // Garante que o gerente comeca desativado se for um objeto na cena
-        // Ou simplemente espera o tempo se ja estiver ativo
+        // Ou simplesmente espera o tempo se ja estiver ativo
         StartCoroutine(TimerSequencia());
+    }
+
+    // Public method to force-start the event immediately (called by coordinator)
+    public void StartEventImmediate()
+    {
+        if (eventoIniciado) return;
+        // Stop any waiting coroutines if running
+        StopAllCoroutines();
+        FazerClientesSairem();
+        StartCoroutine(ExecutarEvento());
     }
 
     IEnumerator TimerSequencia()
@@ -159,6 +175,14 @@ public class GerenteController : MonoBehaviour
             
             Debug.Log("[Gerente] Evento finalizado. Sumindo...");
             AtivarVisual(false);
+            // Notify listeners before destroying
+            OnEventFinished?.Invoke();
+            Destroy(gameObject, 1f);
+        }
+        else
+        {
+            // If no exit configured, still notify listeners
+            OnEventFinished?.Invoke();
             Destroy(gameObject, 1f);
         }
     }

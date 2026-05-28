@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameStatusSystem : MonoBehaviour
 {
@@ -39,6 +40,7 @@ public class GameStatusSystem : MonoBehaviour
         }
 
         instance = this;
+        DontDestroyOnLoad(gameObject);
         GameStatusHUD.EnsureInstance();
         NotifyStatusChanged(null);
     }
@@ -82,8 +84,33 @@ public class GameStatusSystem : MonoBehaviour
         NotifyStatusChanged(null);
     }
 
+    // Reset the internal status values and notify listeners
+    public void ResetStatus(int initialSuspicion = 0, int initialReview = 0)
+    {
+        suspicionLevel = Mathf.Clamp(initialSuspicion, 0, 100);
+        reviewPoints = Mathf.Clamp(initialReview, -100, 100);
+        NotifyStatusChanged(null);
+    }
+
     private void NotifyStatusChanged(Review review)
     {
         StatusChanged?.Invoke(suspicionLevel, reviewPoints, review);
+
+        // If suspicion has reached the max (100), trigger game over via GameManager if present
+        if (suspicionLevel >= 100)
+        {
+            var gm = GameManager.Instance;
+            if (gm != null)
+            {
+                gm.GameOver();
+            }
+            else
+            {
+                // Fallback: save final review and load game over scene directly
+                PlayerPrefs.SetInt("FinalReview", reviewPoints);
+                PlayerPrefs.Save();
+                SceneManager.LoadScene("GameOverScene");
+            }
+        }
     }
 }

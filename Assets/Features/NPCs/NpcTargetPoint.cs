@@ -25,8 +25,16 @@ public class NpcTargetPoint : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        var npc = other.GetComponent<NpcInteractable>();
-        if (npc != null && !Contains(npc) && !IsPartOfGroup(npc))
+        // Try to find an NpcInteractable on the object or its parents
+        var npc = other.GetComponentInParent<NpcInteractable>();
+        if (npc == null)
+            return;
+
+        // Ignore NPCs that are currently leaving so they don't re-enter the queue
+        if (npc.IsLeaving)
+            return;
+
+        if (!Contains(npc) && !IsPartOfGroup(npc))
         {
             EnterQueue(npc);
         }

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -19,13 +18,15 @@ public class NpcSpawnManager : MonoBehaviour
     [SerializeField] private TableTargetPoint[] tableTargetPoints;
     [SerializeField] private LeaveRestaurantTargetPoint leaveRestaurantTargetPoint;
     [SerializeField] private string npcTag = "NPC";
-    [SerializeField] private int maxNpcCount = 10;
     [SerializeField] private int maxGroupSize = 4;
     [SerializeField] private Vector2 spawnIntervalRange = new Vector2(3f, 7f);
     [SerializeField] private bool spawnOnStart = true;
 
     private readonly List<NpcInteractable> activeNpcs = new List<NpcInteractable>();
     private Coroutine spawnRoutine;
+
+    // When true, don't spawn any more table groups for the rest of this session
+    private bool groupsDisabledForSession = false;
 
     private void Start()
     {
@@ -55,11 +56,11 @@ public class NpcSpawnManager : MonoBehaviour
         activeNpcs.Remove(npc);
     }
 
-    private IEnumerator SpawnLoop()
+    private System.Collections.IEnumerator SpawnLoop()
     {
         while (true)
         {
-            if (activeNpcs.Count < maxNpcCount)
+            if (CanSpawnAny())
             {
                 SpawnNpcBatch();
             }
@@ -67,6 +68,19 @@ public class NpcSpawnManager : MonoBehaviour
             var delay = Random.Range(Mathf.Min(spawnIntervalRange.x, spawnIntervalRange.y), Mathf.Max(spawnIntervalRange.x, spawnIntervalRange.y));
             yield return new WaitForSeconds(delay);
         }
+    }
+
+    private bool CanSpawnAny()
+    {
+        // If there are free table seats and we haven't disabled group spawns, allow spawning (groups preferred)
+        if (!groupsDisabledForSession && AnyEmptyTable())
+            return true;
+
+        // If any take-away queue has space, allow spawning lone NPCs
+        if (AnyAvailableQueueSlots())
+            return true;
+
+        return false;
     }
 
     private void SpawnNpcBatch()
@@ -82,18 +96,34 @@ public class NpcSpawnManager : MonoBehaviour
             return;
         }
 
-        var groupSize = Random.Range(1, maxGroupSize + 1);
-        if (groupSize > 1)
+        // Try to spawn a table group if tables are available and groups not disabled
+        if (!groupsDisabledForSession)
         {
-            var tableTarget = GetFreeTableForGroup(groupSize);
-            if (tableTarget != null)
+            var groupSize = Random.Range(1, maxGroupSize + 1);
+            if (groupSize > 1)
             {
-                SpawnTableGroup(spawnPoint, groupSize, tableTarget);
-                return;
+                var tableTarget = GetFreeTableForGroup(groupSize);
+                if (tableTarget != null)
+                {
+                    SpawnTableGroup(spawnPoint, groupSize, tableTarget);
+
+                    // If after spawning we have no empty tables left, disable groups for the rest of the session
+                    if (!AnyEmptyTable())
+                    {
+                        groupsDisabledForSession = true;
+                    }
+
+                    return;
+                }
             }
         }
 
-        SpawnLoneTakeAwayNpc(spawnPoint);
+        // Otherwise try spawn a lone take-away NPC but only if there is an available queue slot
+        var takeAwayTarget = GetRandomTakeAwayTargetPoint();
+        if (takeAwayTarget != null)
+        {
+            SpawnLoneTakeAwayNpc(spawnPoint);
+        }
     }
 
     private void SpawnLoneTakeAwayNpc(NpcSpawnPoint spawnPoint)
@@ -104,21 +134,24 @@ public class NpcSpawnManager : MonoBehaviour
             return;
         }
 
+        var targetPoint = GetRandomTakeAwayTargetPoint();
+        if (targetPoint == null)
+        {
+            // No queue space right now
+            return;
+        }
+
         var npc = Instantiate(prefab, spawnPoint.transform.position, spawnPoint.transform.rotation);
         SetupNpcCommon(npc);
 
         npc.SetSpawnManager(this);
         npc.SetLeaveTargetPoint(leaveRestaurantTargetPoint);
 
-        var targetPoint = GetRandomTakeAwayTargetPoint();
-        if (targetPoint != null)
+        npc.SetTargetPoint(targetPoint);
+        var agent = npc.GetComponent<NavMeshAgent>();
+        if (agent != null)
         {
-            npc.SetTargetPoint(targetPoint);
-            var agent = npc.GetComponent<NavMeshAgent>();
-            if (agent != null)
-            {
-                agent.SetDestination(targetPoint.FrontPosition);
-            }
+            agent.SetDestination(targetPoint.FrontPosition);
         }
 
         RegisterNpc(npc);
@@ -247,6 +280,20 @@ public class NpcSpawnManager : MonoBehaviour
         return null;
     }
 
+    private bool AnyEmptyTable()
+    {
+        if (tableTargetPoints == null)
+            return false;
+
+        foreach (var tableTarget in tableTargetPoints)
+        {
+            if (tableTarget != null && tableTarget.IsEmpty())
+                return true;
+        }
+
+        return false;
+    }
+
     private NpcTargetPoint GetRandomTakeAwayTargetPoint()
     {
         if (targetPoints == null || targetPoints.Length == 0)
@@ -270,5 +317,25 @@ public class NpcSpawnManager : MonoBehaviour
         }
 
         return availableQueues[Random.Range(0, availableQueues.Count)];
+    }
+
+    private bool AnyAvailableQueueSlots()
+    {
+        if (targetPoints == null || targetPoints.Length == 0)
+            return false;
+
+        foreach (var targetPoint in targetPoints)
+        {
+            if (targetPoint != null && targetPoint.GetQueueCount() < targetPoint.GetMaxQueueSize())
+                return true;
+        }
+
+        return false;
+    }
+
+    // Reset session state (called on GameOver/Reset)
+    public void ResetSession()
+    {
+        groupsDisabledForSession = false;
     }
 }

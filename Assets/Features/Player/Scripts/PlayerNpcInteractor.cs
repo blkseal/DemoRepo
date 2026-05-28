@@ -68,21 +68,49 @@ public class PlayerNpcInteractor : MonoBehaviour
             return;
         }
 
-        InteractionPromptUI.Instance.Hide();
+        // Check for NPC group or single NPC and show a generic prompt
+        var group = hit.collider.GetComponentInParent<NpcGroupInteractable>();
+        var npc = hit.collider.GetComponentInParent<NpcInteractable>();
 
+        if (group != null)
+        {
+            if (group.CanInteract)
+            {
+                InteractionPromptUI.Instance.Show("Press E to speak");
+            }
+            else
+            {
+                InteractionPromptUI.Instance.Hide();
+            }
+        }
+        else if (npc != null)
+        {
+            if (npc.CanInteract)
+            {
+                InteractionPromptUI.Instance.Show("Press E to speak");
+            }
+            else
+            {
+                InteractionPromptUI.Instance.Hide();
+            }
+        }
+        else
+        {
+            InteractionPromptUI.Instance.Hide();
+        }
+
+        // Only handle input after showing prompt state
         if (!Input.GetKeyDown(KeyCode.E))
         {
             return;
         }
 
-        var group = hit.collider.GetComponentInParent<NpcGroupInteractable>();
         if (group != null)
         {
             group.Interact();
             return;
         }
 
-        var npc = hit.collider.GetComponentInParent<NpcInteractable>();
         if (npc == null)
         {
             return;

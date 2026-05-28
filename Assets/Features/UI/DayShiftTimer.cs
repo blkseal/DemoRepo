@@ -4,7 +4,13 @@ using UnityEngine.SceneManagement;
 
 public class DayShiftTimer : MonoBehaviour
 {
-    public float startTime = 15 * 60f; // 15 minutos
+    [Header("Timer Settings")]
+    [Tooltip("Total real-time duration of the shift in seconds.")]
+    public float startTime = 10 * 60f; // 10 minutes
+
+    [Tooltip("If set to 0 or greater this value will override the runtime currentTime for testing (seconds). Set -1 to use startTime).")]
+    [SerializeField] private float initialCurrentTime = -1f;
+
     private float currentTime;
 
     private Text timerText;
@@ -14,7 +20,7 @@ public class DayShiftTimer : MonoBehaviour
 
     private void Awake()
     {
-        currentTime = startTime;
+        currentTime = (initialCurrentTime >= 0f) ? initialCurrentTime : startTime;
         CreateUI();
     }
 
@@ -30,20 +36,7 @@ public class DayShiftTimer : MonoBehaviour
 
         UpdateTimerDisplay();
 
-        // Flashing apenas entre os 10 e 15 minutos (quando currentTime está entre 600 e 300 segundos)
-        if (currentTime <= 600f && currentTime > 300f && !flashing)
-        {
-            flashing = true;
-            InvokeRepeating(nameof(FlashRed), 0f, 0.5f);
-        }
-
-        // Parar flashing quando passa dos 15 minutos
-        if (currentTime <= 300f && flashing)
-        {
-            flashing = false;
-            CancelInvoke(nameof(FlashRed));
-            timerText.color = Color.white;
-        }
+        // Flashing handled inside UpdateTimerDisplay based on display time
     }
 
     private void CreateUI()
@@ -52,7 +45,8 @@ public class DayShiftTimer : MonoBehaviour
         var canvas = new GameObject("DayShiftCanvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         canvas.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.GetComponent<Canvas>().sortingOrder = 999;
-        DontDestroyOnLoad(canvas);
+        // Do not persist the timer canvas across scenes; let it be destroyed with the scene
+        // DontDestroyOnLoad(canvas);
 
         // SHIFT LABEL
         var shiftObj = new GameObject("ShiftLabel", typeof(Text));
@@ -94,25 +88,44 @@ public class DayShiftTimer : MonoBehaviour
 
     private void UpdateTimerDisplay()
     {
-        // Tempo decorrido em segundos
+        // elapsed real seconds since shift start
         float elapsedSeconds = startTime - currentTime;
-        
-        // Regra: cada 4 segundos de jogo = 1 minuto real (turno de 15 min = 60 seg de jogo)
-        int minutosReais = Mathf.FloorToInt(elapsedSeconds / 4f);
-        
+        elapsedSeconds = Mathf.Clamp(elapsedSeconds, 0f, startTime);
+
+        // Map elapsedSeconds (0..startTime) to display minutes from 0..180 (12:00 -> 15:00 = 3 hours)
+        float totalDisplayMinutes = 3f * 60f; // 180 minutes
+        float fraction = (startTime > 0f) ? (elapsedSeconds / startTime) : 1f;
+        fraction = Mathf.Clamp01(fraction);
+        float displayMinutesFloat = fraction * totalDisplayMinutes;
+        int minutosReais = Mathf.FloorToInt(displayMinutesFloat);
+
         // Hora início: 12:00
-        int horaAtual = 12;
-        int minutoAtual = minutosReais;
-        
-        // Ajustar para horas
-        horaAtual += minutoAtual / 60;
-        minutoAtual = minutoAtual % 60;
-        
-        // Garantir que não ultrapassa 15:00
-        if (horaAtual > 15)
+        int horaAtual = 12 + (minutosReais / 60);
+        int minutoAtual = minutosReais % 60;
+
+        // Cap at 15:00
+        if (horaAtual > 15 || (horaAtual == 15 && minutoAtual > 0))
+        {
             horaAtual = 15;
-        
+            minutoAtual = 0;
+        }
+
         timerText.text = $"{horaAtual:00}:{minutoAtual:00}";
+
+        // Start flashing from 14:45 to 15:00
+        bool shouldFlash = (horaAtual > 14) || (horaAtual == 14 && minutoAtual >= 45);
+
+        if (shouldFlash && !flashing)
+        {
+            flashing = true;
+            InvokeRepeating(nameof(FlashRed), 0f, 0.5f);
+        }
+        else if (!shouldFlash && flashing)
+        {
+            flashing = false;
+            CancelInvoke(nameof(FlashRed));
+            timerText.color = Color.white;
+        }
     }
 
     private void FlashRed()
@@ -135,6 +148,16 @@ public class DayShiftTimer : MonoBehaviour
             Destroy(timerCanvas);
         }
 
-        SceneManager.LoadScene("ResultScene");
+        // Use EndOfDayCoordinator to ensure the gerente event always runs before showing results
+        var coordinator = Object.FindObjectOfType<EndOfDayCoordinator>();
+        if (coordinator != null)
+        {
+            coordinator.HandleEndOfDay();
+        }
+        else
+        {
+            // Fallback to loading the result scene directly
+            SceneManager.LoadScene("ResultScene");
+        }
     }
 }

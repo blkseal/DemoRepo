@@ -132,6 +132,21 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         SetState(GameState.GameOver);
+
+        // Save final review points so the result or game over scene can show them
+        if (GameStatusSystem.Instance != null)
+        {
+            PlayerPrefs.SetInt("FinalReview", GameStatusSystem.Instance.ReviewPoints);
+        }
+        else
+        {
+            PlayerPrefs.SetInt("FinalReview", ReviewPoints);
+        }
+
+        PlayerPrefs.Save();
+
+        // Load the game over scene. Ensure a scene named "GameOverScene" exists in build settings.
+        SceneManager.LoadScene("GameOverScene");
     }
 
     public void ReturnToMainMenu()
@@ -179,6 +194,18 @@ public class GameManager : MonoBehaviour
         CurrentDay = startingDay;
         ReviewPoints = startingReviewPoints;
         SuspicionPoints = startingSuspicionPoints;
+
+        // Also reset persistent GameStatusSystem if present
+        var statusSystem = GameStatusSystem.Instance;
+        if (statusSystem != null)
+        {
+            statusSystem.ResetStatus(startingSuspicionPoints, startingReviewPoints);
+        }
+        var spawnManager = UnityEngine.Object.FindFirstObjectByType<NpcSpawnManager>();
+        if (spawnManager != null)
+        {
+            spawnManager.ResetSession();
+        }
 
         OnDayChanged?.Invoke(CurrentDay);
         OnReviewPointsChanged?.Invoke(ReviewPoints);

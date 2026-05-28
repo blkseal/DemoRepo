@@ -35,18 +35,18 @@ public class ResultSceneManager : MonoBehaviour
         resultText.alignment = TextAnchor.MiddleCenter;
 
         // Criar texto com ReviewPoints
-        string resultMessage = $"Review Points: {reviewPoints}\n\n";
+        string resultMessage = $"Pontuação: {reviewPoints}\n\n";
         
         // Mostrar texto conforme o resultado
         if (reviewPoints < 0)
         {
             resultMessage += "Estás num bom caminho para ser despedido...";
-            resultText.color = Color.red;
+            resultText.color = Color.green;
         }
         else if (reviewPoints > 0)
         {
             resultMessage += "Infelizmente estás a fazer um bom trabalho e o Gerente está a considerar promover-te";
-            resultText.color = Color.green;
+            resultText.color = Color.red;
         }
         else
         {
@@ -72,5 +72,11 @@ public class ResultSceneManager : MonoBehaviour
     public void BackToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
+    }
+
+    public void PlayAgain()
+    {
+        // Load the main gameplay scene and let SceneLoadHandler / GameManager.StartGame handle reset
+        SceneManager.LoadScene("DemoScene_Main");
     }
 }
